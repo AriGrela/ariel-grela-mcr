@@ -1,0 +1,870 @@
+{
+  "person": {
+    "name": "Ariel Sebastián Grela",
+    "shortName": "Ariel Grela",
+    "initials": "AG",
+    "title": {
+      "es": "Media Technology · Streaming Operations · Implementación y Automatización",
+      "en": "Media Technology · Streaming Operations · Implementation & Automation"
+    },
+    "tagline": {
+      "es": "Opero señales en vivo para Disney y ESPN. Programo para que las operaciones fallen menos.",
+      "en": "I run live signals for Disney and ESPN. I write code so operations fail less."
+    },
+    "location": {
+      "es": "Buenos Aires, Argentina",
+      "en": "Buenos Aires, Argentina"
+    },
+    "email": "arielsgrela@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/arielgrela/",
+    "github": "https://github.com/AriGrela",
+    "site": "https://arielgrela.vercel.app"
+  },
+  "about": {
+    "es": [
+      "Soy Técnico Universitario en Audiovisión y estudiante avanzado de la Tecnicatura Universitaria en Programación en UTN. Cuento con experiencia en operaciones de broadcast y streaming para proyectos de ESPN y Disney a través de GRUP MEDIAPRO.",
+      "Actualmente trabajo en content insertion y continuidad para señales de Disney Streaming en Latinoamérica, Centroamérica y México. Participo en la operación de más de 60 eventos mensuales, gestionando transmisiones en vivo, inserciones comerciales, control de calidad e incidentes, con coordinación regional y equipos de Estados Unidos.",
+      "Anteriormente operé sistemas de automatización para transmisiones deportivas de ESPN y workflows de broadcast y esports en LVP. Esta experiencia me permitió desarrollar una mirada integral sobre operaciones críticas, tecnología, procesos y coordinación de equipos.",
+      "Complemento mi experiencia audiovisual con conocimientos de Python, Google Apps Script, SQL, Java, Git y n8n. Me interesa diseñar automatizaciones y soluciones que mejoren la confiabilidad y eficiencia de operaciones reales."
+    ],
+    "en": [
+      "I hold a university technical degree in Audiovisual Production and I'm an advanced student of the Programming technical degree at UTN (National Technological University). I have hands-on experience in broadcast and streaming operations for ESPN and Disney projects through GRUP MEDIAPRO.",
+      "I currently work in content insertion and continuity for Disney Streaming feeds across Latin America, Central America and Mexico. I take part in operating 60+ events per month — live broadcasts, commercial insertions, quality control and incident management — coordinating with regional and US-based teams.",
+      "Before that I operated automation systems for ESPN sports broadcasts and ran broadcast and esports workflows at LVP. That gave me an end-to-end view of mission-critical operations, technology, processes and team coordination.",
+      "I complement my audiovisual background with Python, Google Apps Script, SQL, Java, Git and n8n. I enjoy designing automations and solutions that make real-world operations more reliable and efficient."
+    ]
+  },
+  "summary": {
+    "es": [
+      "Técnico Universitario en Audiovisión y estudiante avanzado de la Tecnicatura Universitaria en Programación (UTN), con más de 4 años de experiencia en operaciones críticas de broadcast y streaming en proyectos de Disney y ESPN a través de GRUP MEDIAPRO. Gestiona un calendario de más de 60 eventos mensuales para señales de Latinoamérica, Centroamérica y México, combinando content insertion, continuidad, control de calidad, soporte e incident management.",
+      "Perfil orientado a media technology, implementación de soluciones y coordinación técnica, con foco en relevamiento de requisitos, documentación y automatización de workflows operativos con Python, SQL, Java y Google Apps Script."
+    ],
+    "en": [
+      "University technician in Audiovisual Production and advanced Programming student at UTN, with 4+ years in mission-critical broadcast and streaming operations for Disney and ESPN projects through GRUP MEDIAPRO. Manages a calendar of 60+ events per month for feeds across Latin America, Central America and Mexico, combining content insertion, continuity, quality control, support and incident management.",
+      "Focused on media technology, solutions implementation and technical coordination — requirements gathering, documentation and automation of operational workflows with Python, SQL, Java and Google Apps Script."
+    ]
+  },
+  "seeking": {
+    "es": "Busco crecer en roles de media technology, implementación de soluciones, coordinación técnica, streaming operations y workflow automation — especialmente oportunidades internacionales remotas o híbridas en Buenos Aires.",
+    "en": "I'm looking to grow into media technology, solutions implementation, technical coordination, streaming operations and workflow automation roles — especially international remote or hybrid opportunities in Buenos Aires."
+  },
+  "stats": [
+    {
+      "value": "4+",
+      "label": {
+        "es": "años en broadcast y streaming en vivo",
+        "en": "years in live broadcast & streaming"
+      }
+    },
+    {
+      "value": "60+",
+      "label": {
+        "es": "eventos por mes en operación",
+        "en": "events operated per month"
+      }
+    },
+    {
+      "value": "3",
+      "label": {
+        "es": "regiones: LATAM, Centroamérica y México",
+        "en": "regions: LATAM, Central America & Mexico"
+      }
+    },
+    {
+      "value": "ES/EN",
+      "label": {
+        "es": "coordinación con equipos de EE.UU.",
+        "en": "coordination with US teams"
+      }
+    }
+  ],
+  "competencies": [
+    {
+      "title": {
+        "es": "Operaciones",
+        "en": "Operations"
+      },
+      "text": {
+        "es": "Streaming operations, content insertion, continuidad, playout, broadcast automation y QC de señal.",
+        "en": "Streaming operations, content insertion, continuity, playout, broadcast automation and signal QC."
+      }
+    },
+    {
+      "title": {
+        "es": "Soporte e incidentes",
+        "en": "Support & incidents"
+      },
+      "text": {
+        "es": "Troubleshooting de software, servidores y redes; incident management, escalamiento y documentación de fallas.",
+        "en": "Software, server and network troubleshooting; incident management, escalation and failure documentation."
+      }
+    },
+    {
+      "title": {
+        "es": "Implementación",
+        "en": "Implementation"
+      },
+      "text": {
+        "es": "Relevamiento de requisitos, diseño y optimización de workflows, pruebas con usuarios y documentación técnica.",
+        "en": "Requirements gathering, workflow design and optimization, user testing and technical documentation."
+      }
+    },
+    {
+      "title": {
+        "es": "Automatización y datos",
+        "en": "Automation & data"
+      },
+      "text": {
+        "es": "Python, SQL, Google Apps Script, n8n, Java, Git y GitHub.",
+        "en": "Python, SQL, Google Apps Script, n8n, Java, Git and GitHub."
+      }
+    },
+    {
+      "title": {
+        "es": "Coordinación",
+        "en": "Coordination"
+      },
+      "text": {
+        "es": "Trabajo en tiempo real con equipos regionales de LATAM y Estados Unidos, en español e inglés.",
+        "en": "Real-time work with regional LATAM and US teams, in Spanish and English."
+      }
+    }
+  ],
+  "experience": [
+    {
+      "id": "disney",
+      "role": {
+        "es": "Content Insertion Operator",
+        "en": "Content Insertion Operator"
+      },
+      "org": "Disney Streaming (LATAM)",
+      "via": "GRUP MEDIAPRO",
+      "start": "2026-03",
+      "end": null,
+      "location": "Buenos Aires, Argentina",
+      "tags": [
+        "Content insertion",
+        "Continuidad",
+        "QC",
+        "Incident management",
+        "ESPN · YouTube"
+      ],
+      "bullets": {
+        "es": [
+          "Opero continuidad y content insertion para señales de Disney Streaming en Latinoamérica, Centroamérica y México bajo estándares técnicos internacionales.",
+          "Gestiono un calendario de más de 60 eventos mensuales: transmisiones en vivo, aperturas y cierres, inserciones comerciales, bumpers y eventos digitales para ESPN en YouTube.",
+          "Ejecuto y valido tandas y cortes comerciales, supervisando sincronización, transiciones y continuidad de señal.",
+          "Realizo control de calidad (QC), detecto desvíos, documento incidentes y escalo fallas para prevenir baches y errores de inserción.",
+          "Coordino en español e inglés con equipos regionales y de Estados Unidos durante operaciones en tiempo real."
+        ],
+        "en": [
+          "Run continuity and content insertion for Disney Streaming feeds across Latin America, Central America and Mexico under international technical standards.",
+          "Manage a calendar of 60+ events per month: live broadcasts, sign-ons and sign-offs, commercial insertions, bumpers and digital events for ESPN on YouTube.",
+          "Execute and validate commercial breaks, monitoring sync, transitions and signal continuity.",
+          "Perform quality control (QC), catch deviations, document incidents and escalate failures to prevent dead air and insertion errors.",
+          "Coordinate in Spanish and English with regional and US teams during real-time operations."
+        ]
+      }
+    },
+    {
+      "id": "boccacci",
+      "role": {
+        "es": "Soporte Técnico y Automatización",
+        "en": "IT Support & Automation"
+      },
+      "org": "Laboratorio Boccacci",
+      "via": {
+        "es": "Proyecto independiente",
+        "en": "Independent project"
+      },
+      "start": "2024-02",
+      "end": "2026-04",
+      "location": "Buenos Aires, Argentina",
+      "tags": [
+        "Google Apps Script",
+        "Python",
+        "Sheets · Forms",
+        "Soporte IT",
+        "Relevamiento"
+      ],
+      "bullets": {
+        "es": [
+          "Brindé soporte técnico a usuarios de recepción, bioquímica y administración; resolví incidencias de hardware, software, accesos, redes y sistemas.",
+          "Relevé requisitos y diseñé un prototipo con Google Sheets, Forms y Apps Script para administrar protocolos, validar datos, organizar planes de trabajo y generar reportes.",
+          "Coordiné pruebas con usuarios y evalué la solución desarrollada frente a alternativas comerciales e integraciones disponibles.",
+          "Desarrollé scripts en Python para procesamiento de datos y automatización de reportes."
+        ],
+        "en": [
+          "Provided IT support to reception, biochemistry and admin staff; solved hardware, software, access, network and systems issues.",
+          "Gathered requirements and designed a Google Sheets, Forms and Apps Script prototype to manage protocols, validate data, organize work plans and generate reports.",
+          "Ran user testing and evaluated the solution against commercial alternatives and available integrations.",
+          "Built Python scripts for data processing and report automation."
+        ]
+      }
+    },
+    {
+      "id": "espn",
+      "role": {
+        "es": "Switcher Master",
+        "en": "Master Control Switcher"
+      },
+      "org": "ESPN",
+      "via": "GRUP MEDIAPRO",
+      "start": "2023-11",
+      "end": "2025-10",
+      "location": "Buenos Aires, Argentina",
+      "tags": [
+        "Master control",
+        "Broadcast automation",
+        "Troubleshooting",
+        "NOC"
+      ],
+      "bullets": {
+        "es": [
+          "Operé sistemas de automatización en tiempo real para transmisiones deportivas de ESPN.",
+          "Detecté y resolví incidentes vinculados con software, servidores y redes, coordinando con Ingeniería, NOC y soporte remoto.",
+          "Documenté fallas recurrentes y oportunidades de mejora; optimicé workflows y procesos operativos."
+        ],
+        "en": [
+          "Operated real-time automation systems for ESPN sports broadcasts.",
+          "Detected and resolved software, server and network incidents, coordinating with Engineering, NOC and remote support.",
+          "Documented recurring failures and improvement opportunities; optimized workflows and operating procedures."
+        ]
+      }
+    },
+    {
+      "id": "lvp",
+      "role": {
+        "es": "Broadcast Operator",
+        "en": "Broadcast Operator"
+      },
+      "org": "LVP · Liga de Videojuegos Profesional",
+      "via": "GRUP MEDIAPRO",
+      "start": "2022-01",
+      "end": "2023-11",
+      "location": "Buenos Aires, Argentina",
+      "tags": [
+        "vMix",
+        "OBS Studio",
+        "Companion",
+        "Esports",
+        "Live data"
+      ],
+      "bullets": {
+        "es": [
+          "Operé transmisiones de esports y contenidos en vivo mediante workflows semiautomatizados con vMix, OBS Studio y Companion.",
+          "Integré datos en tiempo real en paneles de control y brindé soporte a aplicaciones de playout y gráficos.",
+          "Coordiné configuraciones técnicas, documenté procesos y monitoreé la estabilidad de las señales durante la operación.",
+          "Trabajé en finales presenciales en estadio (Polideportivo San Lorenzo y Costa Salguero) y en finales online de League of Legends, Counter-Strike y Free Fire."
+        ],
+        "en": [
+          "Ran esports broadcasts and live content through semi-automated workflows built on vMix, OBS Studio and Companion.",
+          "Integrated real-time data into control panels and supported playout and graphics applications.",
+          "Coordinated technical setups, documented processes and monitored signal stability during operation.",
+          "Worked on-site stadium finals (San Lorenzo arena and Costa Salguero) and online finals for League of Legends, Counter-Strike and Free Fire."
+        ]
+      }
+    },
+    {
+      "id": "1block",
+      "role": {
+        "es": "Broadcast Assistant",
+        "en": "Broadcast Assistant"
+      },
+      "org": "1Block",
+      "via": {
+        "es": "En paralelo a LVP",
+        "en": "Alongside LVP"
+      },
+      "start": "2022-09",
+      "end": "2022-12",
+      "location": "Buenos Aires, Argentina",
+      "tags": [
+        "Ladder League",
+        "Live",
+        "Setup de señales"
+      ],
+      "bullets": {
+        "es": [
+          "Operé y di soporte a torneos de Ladder League y contenidos en vivo.",
+          "Configuré señales y equipamiento, asistí aplicaciones de broadcast y coordiné la resolución de incidencias."
+        ],
+        "en": [
+          "Operated and supported Ladder League tournaments and live content.",
+          "Configured signals and equipment, supported broadcast applications and coordinated issue resolution."
+        ]
+      }
+    },
+    {
+      "id": "overbright",
+      "role": {
+        "es": "Editor de video y Ayudante de cámara",
+        "en": "Video Editor & Camera Assistant"
+      },
+      "org": "Overbright Studio",
+      "via": null,
+      "start": "2017-01",
+      "end": "2020-12",
+      "yearOnly": true,
+      "location": "Buenos Aires, Argentina",
+      "tags": [
+        "Premiere Pro",
+        "After Effects",
+        "Videoclips",
+        "Cámara"
+      ],
+      "bullets": {
+        "es": [
+          "Realicé edición y posproducción de videoclips con Adobe Premiere Pro y After Effects.",
+          "Asistí en cámara y coordiné entregas de rodaje y edición con el equipo de producción."
+        ],
+        "en": [
+          "Edited and post-produced music videos with Adobe Premiere Pro and After Effects.",
+          "Assisted on camera and coordinated shoot and edit deliveries with the production team."
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "unity-2023",
+      "title": {
+        "es": "Gran Final Unity League Flow 2023",
+        "en": "Unity League Flow 2023 Grand Final"
+      },
+      "game": "Counter-Strike",
+      "date": {
+        "es": "Oct 2023",
+        "en": "Oct 2023"
+      },
+      "mode": "onsite",
+      "venue": {
+        "es": "Costa Salguero · Argentina Game Show (AGS Flow)",
+        "en": "Costa Salguero · Argentina Game Show (AGS Flow)"
+      },
+      "facts": {
+        "es": [
+          "Superclásico en la final: Boca vs. River.",
+          "Primera final de la Unity League con público, en el escenario de AGS Flow 2023.",
+          "AGS Flow 2023 reunió a unas 120.000 personas en cuatro días."
+        ],
+        "en": [
+          "A Superclásico final: Boca vs. River.",
+          "First Unity League final ever played in front of a crowd, on the AGS Flow 2023 stage.",
+          "AGS Flow 2023 drew around 120,000 people over four days."
+        ]
+      }
+    },
+    {
+      "id": "lmf-clausura-2022",
+      "title": {
+        "es": "Gran Final Liga Master Flow · Clausura 2022",
+        "en": "Liga Master Flow Grand Final · Clausura 2022"
+      },
+      "game": "League of Legends",
+      "date": {
+        "es": "Jul 2022",
+        "en": "Jul 2022"
+      },
+      "mode": "onsite",
+      "venue": {
+        "es": "Microestadio del Polideportivo San Lorenzo (CABA)",
+        "en": "San Lorenzo arena (Buenos Aires)"
+      },
+      "facts": {
+        "es": [
+          "Leviatán 3–0 Boca Juniors Gaming, al mejor de cinco.",
+          "Más de 1.500 personas en el estadio: la final volvió a ser presencial.",
+          "Show de apertura con Dillom."
+        ],
+        "en": [
+          "Leviatán 3–0 Boca Juniors Gaming, best of five.",
+          "1,500+ fans in the arena — the final was back in person.",
+          "Opening show by Dillom."
+        ]
+      }
+    },
+    {
+      "id": "supercopa-2022",
+      "title": {
+        "es": "Final Supercopa Flow",
+        "en": "Supercopa Flow Final"
+      },
+      "game": "League of Legends",
+      "date": {
+        "es": "2022",
+        "en": "2022"
+      },
+      "mode": "online",
+      "venue": {
+        "es": "Transmisión online · LVP Argentina",
+        "en": "Online broadcast · LVP Argentina"
+      },
+      "facts": {
+        "es": [
+          "Torneo de cierre de temporada del LoL competitivo argentino, con 12 organizaciones."
+        ],
+        "en": [
+          "Season-closing tournament of Argentina's competitive LoL scene, with 12 organizations."
+        ]
+      }
+    },
+    {
+      "id": "unity-apertura",
+      "title": {
+        "es": "Final Apertura Unity League Flow",
+        "en": "Unity League Flow Apertura Final"
+      },
+      "game": "Counter-Strike",
+      "date": {
+        "es": "2022–2023",
+        "en": "2022–2023"
+      },
+      "mode": "online",
+      "venue": {
+        "es": "Transmisión online · LVP Argentina",
+        "en": "Online broadcast · LVP Argentina"
+      },
+      "facts": {
+        "es": [
+          "La liga argentina de Counter-Strike de LVP y Flow."
+        ],
+        "en": [
+          "LVP and Flow's national Counter-Strike league in Argentina."
+        ]
+      }
+    },
+    {
+      "id": "retadores-ff",
+      "title": {
+        "es": "Final Retadores Free Fire · Clausura",
+        "en": "Retadores Free Fire Final · Clausura"
+      },
+      "game": "Free Fire",
+      "date": {
+        "es": "LVP × Garena",
+        "en": "LVP × Garena"
+      },
+      "mode": "online",
+      "venue": {
+        "es": "Transmisión online · Región Sur",
+        "en": "Online broadcast · South region"
+      },
+      "facts": {
+        "es": [
+          "Liga profesional de LVP y Garena para Argentina, Bolivia, Chile, Paraguay, Perú y Uruguay."
+        ],
+        "en": [
+          "LVP and Garena's pro league for Argentina, Bolivia, Chile, Paraguay, Peru and Uruguay."
+        ]
+      }
+    },
+    {
+      "id": "ladder",
+      "title": {
+        "es": "Ladder League",
+        "en": "Ladder League"
+      },
+      "game": "League of Legends",
+      "date": {
+        "es": "2022 · 1Block",
+        "en": "2022 · 1Block"
+      },
+      "mode": "online",
+      "venue": {
+        "es": "Transmisión online · 1Block",
+        "en": "Online broadcast · 1Block"
+      },
+      "facts": {
+        "es": [
+          "Torneos y contenidos en vivo de la comunidad competitiva."
+        ],
+        "en": [
+          "Tournaments and live content for the competitive community."
+        ]
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": "lab",
+      "title": {
+        "es": "Automatización operativa para laboratorio",
+        "en": "Operational automation for a clinical lab"
+      },
+      "kind": {
+        "es": "Implementación real",
+        "en": "Real-world implementation"
+      },
+      "stack": [
+        "Google Apps Script",
+        "Sheets",
+        "Forms",
+        "Python"
+      ],
+      "problem": {
+        "es": "Protocolos, planes de trabajo y reportes gestionados a mano entre recepción, bioquímica y administración.",
+        "en": "Protocols, work plans and reports handled manually across reception, biochemistry and admin."
+      },
+      "solution": {
+        "es": "Prototipo con Sheets, Forms y Apps Script para administrar protocolos, validar datos, planificar el trabajo y generar reportes; scripts complementarios en Python.",
+        "en": "A Sheets, Forms and Apps Script prototype to manage protocols, validate data, plan work and generate reports, with companion Python scripts."
+      },
+      "result": {
+        "es": "Relevamiento y pruebas con usuarios finales; evaluación contra alternativas comerciales e integraciones.",
+        "en": "Requirements and testing with end users; evaluated against commercial alternatives and integrations."
+      }
+    },
+    {
+      "id": "broadcast-flows",
+      "title": {
+        "es": "Workflows de broadcast semiautomatizados",
+        "en": "Semi-automated broadcast workflows"
+      },
+      "kind": {
+        "es": "Broadcast · LVP",
+        "en": "Broadcast · LVP"
+      },
+      "stack": [
+        "vMix",
+        "OBS Studio",
+        "Bitfocus Companion",
+        "Live data"
+      ],
+      "problem": {
+        "es": "Transmisiones de esports con muchas fuentes, gráficos y datos en vivo que cambian minuto a minuto.",
+        "en": "Esports broadcasts with many sources, graphics and live data changing minute by minute."
+      },
+      "solution": {
+        "es": "Botoneras y macros en Companion sobre vMix/OBS e integración de datos en tiempo real en paneles de control.",
+        "en": "Companion button decks and macros over vMix/OBS, plus real-time data feeding control panels."
+      },
+      "result": {
+        "es": "Operación más predecible, menos pasos manuales y procesos documentados para el equipo.",
+        "en": "More predictable operation, fewer manual steps and documented processes for the team."
+      }
+    },
+    {
+      "id": "delivery",
+      "title": {
+        "es": "Optimización de entregas",
+        "en": "Delivery route optimization"
+      },
+      "kind": {
+        "es": "Proyecto académico",
+        "en": "Academic project"
+      },
+      "stack": [
+        "Python",
+        "Data processing"
+      ],
+      "problem": {
+        "es": "Planificar recorridos de entrega de forma eficiente a partir de datos.",
+        "en": "Plan delivery routes efficiently from data."
+      },
+      "solution": {
+        "es": "Procesamiento de datos y optimización de recorridos en Python.",
+        "en": "Data processing and route optimization in Python."
+      },
+      "result": null
+    },
+    {
+      "id": "chatbot",
+      "title": {
+        "es": "Chatbot con inteligencia artificial",
+        "en": "AI chatbot"
+      },
+      "kind": {
+        "es": "Proyecto académico",
+        "en": "Academic project"
+      },
+      "stack": [
+        "AI",
+        "Conversational design"
+      ],
+      "problem": {
+        "es": "Automatizar respuestas frecuentes con una experiencia conversacional clara.",
+        "en": "Automate frequent answers with a clear conversational experience."
+      },
+      "solution": {
+        "es": "Diseño de flujos conversacionales y automatización de respuestas.",
+        "en": "Conversational flow design and response automation."
+      },
+      "result": null
+    },
+    {
+      "id": "mcr",
+      "title": {
+        "es": "Este sitio: MCR",
+        "en": "This site: MCR"
+      },
+      "kind": {
+        "es": "Portfolio interactivo",
+        "en": "Interactive portfolio"
+      },
+      "stack": [
+        "TypeScript",
+        "React",
+        "Three.js",
+        "Vercel"
+      ],
+      "problem": {
+        "es": "Un CV en PDF no muestra cómo se siente estar en un control room.",
+        "en": "A PDF résumé can't show what it feels like to sit in a control room."
+      },
+      "solution": {
+        "es": "Un master control en 3D: cada monitor es una sección y el switcher las saca al aire.",
+        "en": "A 3D master control room: every monitor is a section and the switcher puts it on air."
+      },
+      "result": null,
+      "url": "https://github.com/AriGrela"
+    }
+  ],
+  "clips": [
+    {
+      "id": "ferrari",
+      "title": "Duki x Dicc — Ferrari",
+      "kind": {
+        "es": "Videoclip",
+        "en": "Music video"
+      },
+      "year": "2018",
+      "role": {
+        "es": "Overbright Studio · edición y cámara",
+        "en": "Overbright Studio · editing & camera"
+      },
+      "url": null
+    },
+    {
+      "id": "qepd",
+      "title": "Wolty — Q.E.P.D",
+      "kind": {
+        "es": "Videoclip",
+        "en": "Music video"
+      },
+      "year": "2018",
+      "role": {
+        "es": "Overbright Studio · edición y cámara",
+        "en": "Overbright Studio · editing & camera"
+      },
+      "url": null
+    }
+  ],
+  "skills": [
+    {
+      "id": "code",
+      "group": {
+        "es": "Programación y datos",
+        "en": "Programming & data"
+      },
+      "items": [
+        "Python",
+        "SQL",
+        "Java",
+        "Spring Boot",
+        "TypeScript",
+        "MongoDB",
+        "Google Apps Script",
+        "n8n",
+        "Git",
+        "GitHub",
+        "Google Workspace",
+        {
+          "es": "Cursor (desarrollo con IA)",
+          "en": "Cursor (AI-assisted dev)"
+        }
+      ]
+    },
+    {
+      "id": "broadcast",
+      "group": {
+        "es": "Broadcast y streaming",
+        "en": "Broadcast & streaming"
+      },
+      "items": [
+        "Content insertion",
+        {
+          "es": "Continuidad",
+          "en": "Continuity"
+        },
+        "Playout",
+        "Broadcast automation",
+        "Master control",
+        {
+          "es": "QC de señal",
+          "en": "Signal QC"
+        },
+        "vMix",
+        "OBS Studio",
+        "Bitfocus Companion",
+        {
+          "es": "Gráficos en vivo",
+          "en": "Live graphics"
+        }
+      ]
+    },
+    {
+      "id": "ops",
+      "group": {
+        "es": "Operaciones y soporte",
+        "en": "Operations & support"
+      },
+      "items": [
+        "Incident management",
+        "Troubleshooting",
+        {
+          "es": "Escalamiento",
+          "en": "Escalation"
+        },
+        "Networking",
+        "Windows",
+        "Office 365",
+        {
+          "es": "Documentación de procesos",
+          "en": "Process documentation"
+        }
+      ]
+    },
+    {
+      "id": "impl",
+      "group": {
+        "es": "Implementación",
+        "en": "Implementation"
+      },
+      "items": [
+        {
+          "es": "Relevamiento de requisitos",
+          "en": "Requirements gathering"
+        },
+        "Workflow design",
+        {
+          "es": "Pruebas con usuarios",
+          "en": "User testing"
+        },
+        {
+          "es": "Documentación técnica",
+          "en": "Technical documentation"
+        }
+      ]
+    },
+    {
+      "id": "av",
+      "group": {
+        "es": "Audiovisual",
+        "en": "Audiovisual"
+      },
+      "items": [
+        "Adobe Premiere Pro",
+        "After Effects",
+        {
+          "es": "Cámara",
+          "en": "Camera"
+        },
+        {
+          "es": "Posproducción",
+          "en": "Post-production"
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "tup",
+      "title": {
+        "es": "Tecnicatura Universitaria en Programación",
+        "en": "University Technical Degree in Programming"
+      },
+      "org": "Universidad Tecnológica Nacional (UTN)",
+      "period": {
+        "es": "2024 — dic 2026",
+        "en": "2024 — Dec 2026"
+      },
+      "status": {
+        "es": "Estudiante avanzado · finalización prevista dic 2026",
+        "en": "Advanced student · expected Dec 2026"
+      },
+      "detail": "Java · Spring Boot · SQL · MongoDB · TypeScript",
+      "state": "progress"
+    },
+    {
+      "id": "unla",
+      "title": {
+        "es": "Técnico Universitario en Audiovisión",
+        "en": "University Technician in Audiovisual Production"
+      },
+      "org": "Universidad Nacional de Lanús (UNLa)",
+      "period": {
+        "es": "2018 — 2022",
+        "en": "2018 — 2022"
+      },
+      "status": {
+        "es": "Título finalizado",
+        "en": "Completed"
+      },
+      "detail": null,
+      "state": "done"
+    },
+    {
+      "id": "isi",
+      "title": {
+        "es": "Ingeniería en Sistemas de Información",
+        "en": "Information Systems Engineering"
+      },
+      "org": "Universidad Tecnológica Nacional (UTN)",
+      "period": {
+        "es": "2015 — 2017",
+        "en": "2015 — 2017"
+      },
+      "status": {
+        "es": "Carrera incompleta · 10 materias aprobadas",
+        "en": "Not completed · 10 courses passed"
+      },
+      "detail": null,
+      "state": "partial"
+    }
+  ],
+  "certifications": [
+    {
+      "id": "cursor-python",
+      "title": {
+        "es": "Cursor con Python: desarrollo inteligente con IA",
+        "en": "Cursor with Python: AI-assisted development"
+      },
+      "org": "Santander Open Academy",
+      "date": {
+        "es": "Ago 2025",
+        "en": "Aug 2025"
+      },
+      "detail": {
+        "es": "8 horas · 2 módulos · autoevaluación",
+        "en": "8 hours · 2 modules · self-assessment"
+      }
+    }
+  ],
+  "languages": [
+    {
+      "name": {
+        "es": "Español",
+        "en": "Spanish"
+      },
+      "level": {
+        "es": "Nativo",
+        "en": "Native"
+      }
+    },
+    {
+      "name": {
+        "es": "Inglés",
+        "en": "English"
+      },
+      "level": {
+        "es": "Intermedio alto (B2)",
+        "en": "Upper-intermediate (B2)"
+      },
+      "note": {
+        "es": "Comprensión avanzada de documentación técnica y reuniones; coordinación operativa en inglés.",
+        "en": "Strong comprehension of technical docs and meetings; day-to-day operational coordination in English."
+      }
+    }
+  ]
+}
