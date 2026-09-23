@@ -244,6 +244,7 @@ function Projects() {
           const inner = (
             <>
               <div className="clip-thumb" aria-hidden="true">
+                {ytId(c.url) && <img src={`https://i.ytimg.com/vi/${ytId(c.url)}/mqdefault.jpg`} alt="" loading="lazy" />}
                 <Icon name="play" size={28} />
                 <span className="clip-tc">{c.year}</span>
               </div>
@@ -269,6 +270,9 @@ function Projects() {
     </div>
   )
 }
+
+/** YouTube video id from a watch URL, for the thumbnail. */
+const ytId = (url: string | null) => (url ? new URL(url).searchParams.get('v') : null)
 
 function Skills() {
   const { lang } = useT()

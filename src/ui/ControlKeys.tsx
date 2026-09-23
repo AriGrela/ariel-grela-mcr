@@ -16,8 +16,10 @@ function useFullscreen() {
 export default function ControlKeys() {
   const { t } = useT()
   const hudHidden = useStore((s) => s.hudHidden)
+  const panelOpen = useStore((s) => s.panelOpen)
   const fullscreen = useFullscreen()
   const canFullscreen = !!document.fullscreenEnabled
+  if (panelOpen) return null
 
   return (
     <div className="control-keys" role="group" aria-label="Control">

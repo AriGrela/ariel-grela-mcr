@@ -423,13 +423,13 @@
     {
       "id": "unity-apertura",
       "title": {
-        "es": "Final Apertura Unity League Flow",
-        "en": "Unity League Flow Apertura Final"
+        "es": "Final Apertura Unity League Flow 2022",
+        "en": "Unity League Flow Apertura 2022 Final"
       },
       "game": "Counter-Strike",
       "date": {
-        "es": "2022–2023",
-        "en": "2022–2023"
+        "es": "2022",
+        "en": "2022"
       },
       "mode": "online",
       "venue": {
@@ -438,10 +438,10 @@
       },
       "facts": {
         "es": [
-          "La liga argentina de Counter-Strike de LVP y Flow."
+          "River Plate 2–0 Furious Gaming (16–14 en Ancient, 16–8 en Dust II)."
         ],
         "en": [
-          "LVP and Flow's national Counter-Strike league in Argentina."
+          "River Plate 2–0 Furious Gaming (16–14 on Ancient, 16–8 on Dust II)."
         ]
       }
     },
@@ -645,7 +645,7 @@
         "es": "Overbright Studio · edición y cámara",
         "en": "Overbright Studio · editing & camera"
       },
-      "url": null
+      "url": "https://www.youtube.com/watch?v=WAT47vPfs04"
     },
     {
       "id": "qepd",
@@ -659,7 +659,7 @@
         "es": "Overbright Studio · edición y cámara",
         "en": "Overbright Studio · editing & camera"
       },
-      "url": null
+      "url": "https://www.youtube.com/watch?v=r4M9e-2DTNs"
     }
   ],
   "skills": [
