@@ -3,6 +3,8 @@ import { useT } from '../i18n'
 import { SECTIONS } from '../sections'
 import { setView, take, useStore } from '../store'
 import { CtaRow, Timecode } from './common'
+import { FocusTags } from './Hud'
+import TileScreen from './TileScreen'
 
 /** 2D multiviewer: used on phones, without WebGL, or when the viewer picks it. */
 export default function Lite() {
@@ -34,6 +36,7 @@ export default function Lite() {
         </h1>
         <p className="hud-title">{tr(cv.person.title, lang)}</p>
         <p className="hud-tagline">{tr(cv.person.tagline, lang)}</p>
+        <FocusTags />
         <ul className="hud-stats">
           {cv.stats.map((s) => (
             <li key={s.value}>
@@ -52,7 +55,7 @@ export default function Lite() {
         {SECTIONS.map((s) => (
           <button key={s.id} type="button" className={`tile tile-${s.id}`} style={{ ['--accent' as string]: s.accent }} onClick={() => take(s.id)}>
             <span className="tile-screen" aria-hidden="true">
-              <span className="tile-src">{s.src}</span>
+              <TileScreen id={s.id} />
             </span>
             <span className="tile-umd">
               <b>{s.key}</b>

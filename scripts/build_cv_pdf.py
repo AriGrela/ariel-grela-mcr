@@ -47,6 +47,7 @@ LABELS = {
         "experience": "Experiencia profesional",
         "projects": "Proyectos técnicos seleccionados",
         "events": "Transmisiones destacadas (LVP)",
+        "events_text": "Finales presenciales en estadio: {onsite}. Finales online: {online}.",
         "education": "Educación y certificaciones",
         "skills": "Tecnologías y herramientas",
         "languages": "Idiomas",
@@ -61,6 +62,7 @@ LABELS = {
         "experience": "Professional experience",
         "projects": "Selected technical projects",
         "events": "Featured broadcasts (LVP)",
+        "events_text": "On-site stadium finals: {onsite}. Online finals: {online}.",
         "education": "Education & certifications",
         "skills": "Technologies & tools",
         "languages": "Languages",
@@ -141,7 +143,7 @@ def build(lang):
         title=f"{p['name']} — CV ({lang.upper()})",
         author=p["name"],
         subject=tr(p["title"], lang),
-        keywords="broadcast, streaming operations, content insertion, media technology, automation, Python, SQL",
+        keywords="media technology, workflow automation, implementation, Python, SQL, Google Apps Script, n8n, AI, streaming operations, broadcast",
     )
     site = p["site"].replace("https://", "")
     story = [
@@ -175,10 +177,11 @@ def build(lang):
     story += section(L["experience"])
     for e in DATA["experience"]:
         via = tr(e.get("via"), lang)
+        items = e["bullets"][lang][:1] if e["id"] in ("overbright", "1block") else e["bullets"][lang]
         head = f"{esc(tr(e['role'], lang))} — {esc(e['org'])}" + (f"  |  {esc(via)}" if via else "")
         when = f"{month(e['start'], lang, e.get('yearOnly'))} – {month(e['end'], lang, e.get('yearOnly'))} · {esc(e['location'])}"
         story.append(
-            KeepTogether([Paragraph(head, S["job"]), Paragraph(when, S["meta"]), bullets(e["bullets"][lang])])
+            KeepTogether([Paragraph(head, S["job"]), Paragraph(when, S["meta"]), bullets(items)])
         )
 
     story += section(L["projects"])
@@ -189,14 +192,9 @@ def build(lang):
         proj.append(f"{tr(pr['title'], lang)} ({tr(pr['kind'], lang)}): {tr(pr['solution'], lang)} [{', '.join(pr['stack'])}]")
     story.append(bullets(proj))
 
-    story += section(L["events"])
+    story += section(L["skills"])
     story.append(
-        bullets(
-            [
-                f"{tr(ev['title'], lang)} — {ev['game']} · {tr(ev['venue'], lang)} ({L[ev['mode']]})"
-                for ev in DATA["events"]
-            ]
-        )
+        bullets([f"{tr(g['group'], lang)}: {', '.join(tr(i, lang) for i in g['items'])}" for g in DATA["skills"]])
     )
 
     story += section(L["education"])
@@ -204,10 +202,10 @@ def build(lang):
     edu += [f"{tr(c['title'], lang)} — {c['org']} · {tr(c['date'], lang)} · {tr(c['detail'], lang)}" for c in DATA["certifications"]]
     story.append(bullets(edu))
 
-    story += section(L["skills"])
-    story.append(
-        bullets([f"{tr(g['group'], lang)}: {', '.join(tr(i, lang) for i in g['items'])}" for g in DATA["skills"]])
-    )
+    story += section(L["events"])
+    onsite = "; ".join(f"{tr(ev['title'], lang)} ({tr(ev['venue'], lang)})" for ev in DATA["events"] if ev["mode"] == "onsite")
+    online = ", ".join(tr(ev["title"], lang) for ev in DATA["events"] if ev["mode"] == "online")
+    story.append(Paragraph(esc(L["events_text"].format(onsite=onsite, online=online)), S["body"]))
 
     story += section(L["languages"])
     story.append(

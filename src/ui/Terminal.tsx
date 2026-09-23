@@ -77,7 +77,8 @@ function neofetch(lang: Lang): ReactNode {
     ['Host', 'GRUP MEDIAPRO · Disney Streaming LATAM'],
     ['Uptime', `${years}+ ${lang === 'es' ? 'años en vivo' : 'years live'}`],
     ['Shell', 'Python · SQL · Apps Script · Java'],
-    ['Automation', 'n8n · Companion · Git'],
+    ['Automation', 'n8n · Apps Script · Companion'],
+    ['AI', lang === 'es' ? 'desarrollo asistido (Cursor) · chatbots' : 'AI-assisted dev (Cursor) · chatbots'],
     ['Playout', lang === 'es' ? '60+ eventos/mes' : '60+ events/month'],
     ['Locale', 'es-AR · en (B2)'],
   ]

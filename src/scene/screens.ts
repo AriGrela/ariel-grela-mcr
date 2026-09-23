@@ -177,7 +177,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     titleLabel(p, cv.person.shortName.toUpperCase(), 30, ly + h * 0.09, h * 0.085)
     ctx.font = `500 ${h * 0.045}px ${F.sans}`
     ctx.fillStyle = '#d9c7a4'
-    ctx.fillText('Media Technology · Streaming Ops', 30, ly + h * 0.155)
+    ctx.fillText('Media Tech · Automation · AI', 30, ly + h * 0.155)
     meters(p, 1)
     vignette(p)
     scanlines(p)
@@ -220,7 +220,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     })
     meters(p, 2)
     scanlines(p, 0.12)
-    umd(p, 2, `PLAYOUT · ${tr(sectionById('experience').label, lang)}`)
+    umd(p, sectionById('experience').key, `PLAYOUT · ${tr(sectionById('experience').label, lang)}`)
   },
 
   live(p) {
@@ -277,7 +277,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     titleLabel(p, 'COSTA SALGUERO · SAN LORENZO', 18, h * 0.72, h * 0.07, '#fff')
     grain(p)
     scanlines(p)
-    umd(p, 3, `OB VAN · ${tr(sectionById('live').label, lang)}`)
+    umd(p, sectionById('live').key, `OB VAN · ${tr(sectionById('live').label, lang)}`)
   },
 
   projects(p) {
@@ -317,7 +317,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     })
     meters(p, 4)
     scanlines(p, 0.1)
-    umd(p, 4, `MEDIA BIN · ${tr(sectionById('projects').label, lang)}`)
+    umd(p, sectionById('projects').key, `MEDIA BIN · ${tr(sectionById('projects').label, lang)}`)
   },
 
   skills(p) {
@@ -336,15 +336,16 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
       ctx.arc(w - 44, y + uh / 2 - 3, 3, 0, Math.PI * 2)
       ctx.fill()
       titleLabel(p, tr(s.group, lang).toUpperCase(), 34, y + uh * 0.62, uh * 0.42, '#d7d0ff')
-      for (let l = 0; l < 10; l++) {
+      // Status LEDs, right-aligned so long group names never run into them.
+      for (let l = 0; l < 7; l++) {
         const on = rand(Math.floor(t * 6) + l * 13 + i * 31) > 0.35
         ctx.fillStyle = on ? (l % 4 === 0 ? AMBER : '#8b7bff') : '#221f2e'
-        ctx.fillRect(w * 0.58 + l * 16, y + uh / 2 - 7, 9, 5)
+        ctx.fillRect(w - 60 - (7 - l) * 14, y + uh / 2 - 7, 8, 5)
       }
     })
     meters(p, 5)
     scanlines(p, 0.1)
-    umd(p, 5, `RACK · ${tr(sectionById('skills').label, lang)}`)
+    umd(p, sectionById('skills').key, `RACK · ${tr(sectionById('skills').label, lang)}`)
   },
 
   education(p) {
@@ -377,7 +378,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     ctx.fillText('+ Cursor × Python · Santander', bx, by + 74)
     meters(p, 6)
     scanlines(p, 0.12)
-    umd(p, 6, `ARCHIVE · ${tr(sectionById('education').label, lang)}`)
+    umd(p, sectionById('education').key, `ARCHIVE · ${tr(sectionById('education').label, lang)}`)
   },
 
   terminal(p) {
@@ -417,7 +418,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     ctx.fillStyle = 'rgba(57,255,136,0.05)'
     ctx.fillRect(0, 0, w, h)
     scanlines(p, 0.2)
-    umd(p, 7, `DEV · ${tr(sectionById('terminal').label, lang)}`)
+    umd(p, sectionById('terminal').key, `DEV · ${tr(sectionById('terminal').label, lang)}`)
   },
 
   contact(p) {
@@ -444,7 +445,7 @@ const sourcePainters: Record<SectionId, (p: PaintCtx) => void> = {
     ctx.fillText('in/arielgrela', 24, h * 0.61)
     ctx.fillText('github.com/AriGrela', 24, h * 0.72)
     scanlines(p, 0.12)
-    umd(p, 8, `RETURN · ${tr(sectionById('contact').label, lang)}`)
+    umd(p, sectionById('contact').key, `RETURN · ${tr(sectionById('contact').label, lang)}`)
   },
 }
 
@@ -491,7 +492,7 @@ export function paintSlate(p: PaintCtx) {
   ctx.font = `500 ${h * 0.042}px ${F.sans}`
   ctx.fillStyle = '#d6dde5'
   ctx.fillText('Media Technology · Streaming Operations', w * 0.06, h * 0.73)
-  ctx.fillText(lang === 'es' ? 'Implementación y Automatización' : 'Implementation & Automation', w * 0.06, h * 0.79)
+  ctx.fillText(lang === 'es' ? 'Implementación · Automatización · IA aplicada' : 'Implementation · Automation · Applied AI', w * 0.06, h * 0.79)
   ctx.font = `500 ${h * 0.032}px ${F.mono}`
   ctx.fillStyle = '#7d8896'
   ctx.fillText('DISNEY STREAMING · ESPN · LVP  —  BUENOS AIRES', w * 0.06, h * 0.88)

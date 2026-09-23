@@ -4,12 +4,12 @@
     "shortName": "Ariel Grela",
     "initials": "AG",
     "title": {
-      "es": "Media Technology · Streaming Operations · Implementación y Automatización",
-      "en": "Media Technology · Streaming Operations · Implementation & Automation"
+      "es": "Media Technology · Implementación y Automatización · Streaming Operations",
+      "en": "Media Technology · Implementation & Automation · Streaming Operations"
     },
     "tagline": {
-      "es": "Opero señales en vivo para Disney y ESPN. Programo para que las operaciones fallen menos.",
-      "en": "I run live signals for Disney and ESPN. I write code so operations fail less."
+      "es": "Opero señales en vivo para Disney y ESPN y programo las herramientas que las hacen más confiables: automatización, optimización de workflows e IA aplicada.",
+      "en": "I run live feeds for Disney and ESPN and build the tools that make them more reliable: automation, workflow optimization and applied AI."
     },
     "location": {
       "es": "Buenos Aires, Argentina",
@@ -18,30 +18,41 @@
     "email": "arielsgrela@gmail.com",
     "linkedin": "https://www.linkedin.com/in/arielgrela/",
     "github": "https://github.com/AriGrela",
-    "site": "https://arielgrela.vercel.app"
+    "site": "https://arielgrela.vercel.app",
+    "focus": [
+      "Python",
+      "SQL",
+      "Apps Script",
+      "n8n",
+      "Java",
+      {
+        "es": "IA aplicada",
+        "en": "Applied AI"
+      }
+    ]
   },
   "about": {
     "es": [
       "Soy Técnico Universitario en Audiovisión y estudiante avanzado de la Tecnicatura Universitaria en Programación en UTN. Cuento con experiencia en operaciones de broadcast y streaming para proyectos de ESPN y Disney a través de GRUP MEDIAPRO.",
       "Actualmente trabajo en content insertion y continuidad para señales de Disney Streaming en Latinoamérica, Centroamérica y México. Participo en la operación de más de 60 eventos mensuales, gestionando transmisiones en vivo, inserciones comerciales, control de calidad e incidentes, con coordinación regional y equipos de Estados Unidos.",
       "Anteriormente operé sistemas de automatización para transmisiones deportivas de ESPN y workflows de broadcast y esports en LVP. Esta experiencia me permitió desarrollar una mirada integral sobre operaciones críticas, tecnología, procesos y coordinación de equipos.",
-      "Complemento mi experiencia audiovisual con conocimientos de Python, Google Apps Script, SQL, Java, Git y n8n. Me interesa diseñar automatizaciones y soluciones que mejoren la confiabilidad y eficiencia de operaciones reales."
+      "Complemento mi experiencia audiovisual con programación: Python, Google Apps Script, SQL, Java, Git y n8n, y uso herramientas de IA para acelerar el desarrollo. Me interesa diseñar automatizaciones y soluciones que mejoren la confiabilidad y eficiencia de operaciones reales."
     ],
     "en": [
       "I hold a university technical degree in Audiovisual Production and I'm an advanced student of the Programming technical degree at UTN (National Technological University). I have hands-on experience in broadcast and streaming operations for ESPN and Disney projects through GRUP MEDIAPRO.",
       "I currently work in content insertion and continuity for Disney Streaming feeds across Latin America, Central America and Mexico. I take part in operating 60+ events per month — live broadcasts, commercial insertions, quality control and incident management — coordinating with regional and US-based teams.",
       "Before that I operated automation systems for ESPN sports broadcasts and ran broadcast and esports workflows at LVP. That gave me an end-to-end view of mission-critical operations, technology, processes and team coordination.",
-      "I complement my audiovisual background with Python, Google Apps Script, SQL, Java, Git and n8n. I enjoy designing automations and solutions that make real-world operations more reliable and efficient."
+      "I complement my audiovisual background with programming — Python, Google Apps Script, SQL, Java, Git and n8n — and use AI tools to speed up development. I enjoy designing automations and solutions that make real-world operations more reliable and efficient."
     ]
   },
   "summary": {
     "es": [
-      "Técnico Universitario en Audiovisión y estudiante avanzado de la Tecnicatura Universitaria en Programación (UTN), con más de 4 años de experiencia en operaciones críticas de broadcast y streaming en proyectos de Disney y ESPN a través de GRUP MEDIAPRO. Gestiona un calendario de más de 60 eventos mensuales para señales de Latinoamérica, Centroamérica y México, combinando content insertion, continuidad, control de calidad, soporte e incident management.",
-      "Perfil orientado a media technology, implementación de soluciones y coordinación técnica, con foco en relevamiento de requisitos, documentación y automatización de workflows operativos con Python, SQL, Java y Google Apps Script."
+      "Perfil híbrido entre operaciones de media y desarrollo: más de 4 años en operaciones críticas de broadcast y streaming para Disney y ESPN (GRUP MEDIAPRO) y estudiante avanzado de la Tecnicatura Universitaria en Programación (UTN). Diseño e implemento automatizaciones con Python, SQL, Google Apps Script y n8n, y uso herramientas de IA para acelerar el desarrollo y optimizar workflows operativos.",
+      "Hoy opero content insertion y continuidad para más de 60 eventos mensuales en Latinoamérica, Centroamérica y México, con foco en control de calidad, incident management y documentación. Orientado a media technology, implementación de soluciones y workflow automation."
     ],
     "en": [
-      "University technician in Audiovisual Production and advanced Programming student at UTN, with 4+ years in mission-critical broadcast and streaming operations for Disney and ESPN projects through GRUP MEDIAPRO. Manages a calendar of 60+ events per month for feeds across Latin America, Central America and Mexico, combining content insertion, continuity, quality control, support and incident management.",
-      "Focused on media technology, solutions implementation and technical coordination — requirements gathering, documentation and automation of operational workflows with Python, SQL, Java and Google Apps Script."
+      "Hybrid profile bridging media operations and software: 4+ years in mission-critical broadcast and streaming operations for Disney and ESPN (GRUP MEDIAPRO) and an advanced Programming student at UTN. I design and implement automations with Python, SQL, Google Apps Script and n8n, and use AI tools to speed up development and optimize operational workflows.",
+      "Currently running content insertion and continuity for 60+ events per month across Latin America, Central America and Mexico, focused on quality control, incident management and documentation. Targeting media technology, solutions implementation and workflow automation roles."
     ]
   },
   "seeking": {
@@ -52,22 +63,22 @@
     {
       "value": "4+",
       "label": {
-        "es": "años en broadcast y streaming en vivo",
-        "en": "years in live broadcast & streaming"
+        "es": "años en operaciones críticas de broadcast y streaming",
+        "en": "years in mission-critical broadcast & streaming"
       }
     },
     {
       "value": "60+",
       "label": {
-        "es": "eventos por mes en operación",
-        "en": "events operated per month"
+        "es": "eventos por mes bajo mi operación",
+        "en": "live events operated per month"
       }
     },
     {
-      "value": "3",
+      "value": "UTN",
       "label": {
-        "es": "regiones: LATAM, Centroamérica y México",
-        "en": "regions: LATAM, Central America & Mexico"
+        "es": "Tecnicatura en Programación · dic 2026",
+        "en": "Programming degree · Dec 2026"
       }
     },
     {
@@ -79,6 +90,26 @@
     }
   ],
   "competencies": [
+    {
+      "title": {
+        "es": "Implementación",
+        "en": "Implementation"
+      },
+      "text": {
+        "es": "Relevamiento de requisitos, diseño y optimización de workflows, prototipos, pruebas con usuarios y documentación técnica.",
+        "en": "Requirements gathering, workflow design and optimization, prototyping, user testing and technical documentation."
+      }
+    },
+    {
+      "title": {
+        "es": "Automatización, datos e IA",
+        "en": "Automation, data & AI"
+      },
+      "text": {
+        "es": "Python, SQL, Google Apps Script, n8n, Java, Git y GitHub; desarrollo asistido por IA (Cursor) y flujos conversacionales.",
+        "en": "Python, SQL, Google Apps Script, n8n, Java, Git and GitHub; AI-assisted development (Cursor) and conversational flows."
+      }
+    },
     {
       "title": {
         "es": "Operaciones",
@@ -97,26 +128,6 @@
       "text": {
         "es": "Troubleshooting de software, servidores y redes; incident management, escalamiento y documentación de fallas.",
         "en": "Software, server and network troubleshooting; incident management, escalation and failure documentation."
-      }
-    },
-    {
-      "title": {
-        "es": "Implementación",
-        "en": "Implementation"
-      },
-      "text": {
-        "es": "Relevamiento de requisitos, diseño y optimización de workflows, pruebas con usuarios y documentación técnica.",
-        "en": "Requirements gathering, workflow design and optimization, user testing and technical documentation."
-      }
-    },
-    {
-      "title": {
-        "es": "Automatización y datos",
-        "en": "Automation & data"
-      },
-      "text": {
-        "es": "Python, SQL, Google Apps Script, n8n, Java, Git y GitHub.",
-        "en": "Python, SQL, Google Apps Script, n8n, Java, Git and GitHub."
       }
     },
     {
@@ -545,9 +556,34 @@
       }
     },
     {
+      "id": "chatbot",
+      "title": {
+        "es": "Chatbot con inteligencia artificial",
+        "en": "AI chatbot"
+      },
+      "kind": {
+        "es": "Proyecto académico",
+        "en": "Academic project"
+      },
+      "stack": [
+        "AI / IA",
+        "Conversational design",
+        "Automation"
+      ],
+      "problem": {
+        "es": "Automatizar respuestas frecuentes con una experiencia conversacional clara.",
+        "en": "Automate frequent answers with a clear conversational experience."
+      },
+      "solution": {
+        "es": "Diseño de flujos conversacionales y automatización de respuestas con IA.",
+        "en": "Conversational flow design and AI-driven response automation."
+      },
+      "result": null
+    },
+    {
       "id": "delivery",
       "title": {
-        "es": "Optimización de entregas",
+        "es": "Optimización de rutas de entrega",
         "en": "Delivery route optimization"
       },
       "kind": {
@@ -565,30 +601,6 @@
       "solution": {
         "es": "Procesamiento de datos y optimización de recorridos en Python.",
         "en": "Data processing and route optimization in Python."
-      },
-      "result": null
-    },
-    {
-      "id": "chatbot",
-      "title": {
-        "es": "Chatbot con inteligencia artificial",
-        "en": "AI chatbot"
-      },
-      "kind": {
-        "es": "Proyecto académico",
-        "en": "Academic project"
-      },
-      "stack": [
-        "AI",
-        "Conversational design"
-      ],
-      "problem": {
-        "es": "Automatizar respuestas frecuentes con una experiencia conversacional clara.",
-        "en": "Automate frequent answers with a clear conversational experience."
-      },
-      "solution": {
-        "es": "Diseño de flujos conversacionales y automatización de respuestas.",
-        "en": "Conversational flow design and response automation."
       },
       "result": null
     },
@@ -668,10 +680,74 @@
         "n8n",
         "Git",
         "GitHub",
-        "Google Workspace",
+        "Google Workspace"
+      ]
+    },
+    {
+      "id": "ai",
+      "group": {
+        "es": "Automatización e IA aplicada",
+        "en": "Automation & applied AI"
+      },
+      "items": [
+        "n8n",
+        "Google Apps Script",
         {
-          "es": "Cursor (desarrollo con IA)",
-          "en": "Cursor (AI-assisted dev)"
+          "es": "Desarrollo asistido por IA (Cursor)",
+          "en": "AI-assisted development (Cursor)"
+        },
+        {
+          "es": "Chatbots y flujos conversacionales",
+          "en": "Chatbots & conversational flows"
+        },
+        {
+          "es": "Automatización de reportes",
+          "en": "Report automation"
+        },
+        "Bitfocus Companion"
+      ]
+    },
+    {
+      "id": "impl",
+      "group": {
+        "es": "Implementación",
+        "en": "Implementation"
+      },
+      "items": [
+        {
+          "es": "Relevamiento de requisitos",
+          "en": "Requirements gathering"
+        },
+        "Workflow design",
+        {
+          "es": "Pruebas con usuarios",
+          "en": "User testing"
+        },
+        {
+          "es": "Documentación técnica",
+          "en": "Technical documentation"
+        }
+      ]
+    },
+    {
+      "id": "ops",
+      "group": {
+        "es": "Operaciones y soporte",
+        "en": "Operations & support"
+      },
+      "items": [
+        "Incident management",
+        "Troubleshooting",
+        {
+          "es": "Escalamiento",
+          "en": "Escalation"
+        },
+        "Networking",
+        "Windows",
+        "Office 365",
+        {
+          "es": "Documentación de procesos",
+          "en": "Process documentation"
         }
       ]
     },
@@ -700,50 +776,6 @@
         {
           "es": "Gráficos en vivo",
           "en": "Live graphics"
-        }
-      ]
-    },
-    {
-      "id": "ops",
-      "group": {
-        "es": "Operaciones y soporte",
-        "en": "Operations & support"
-      },
-      "items": [
-        "Incident management",
-        "Troubleshooting",
-        {
-          "es": "Escalamiento",
-          "en": "Escalation"
-        },
-        "Networking",
-        "Windows",
-        "Office 365",
-        {
-          "es": "Documentación de procesos",
-          "en": "Process documentation"
-        }
-      ]
-    },
-    {
-      "id": "impl",
-      "group": {
-        "es": "Implementación",
-        "en": "Implementation"
-      },
-      "items": [
-        {
-          "es": "Relevamiento de requisitos",
-          "en": "Requirements gathering"
-        },
-        "Workflow design",
-        {
-          "es": "Pruebas con usuarios",
-          "en": "User testing"
-        },
-        {
-          "es": "Documentación técnica",
-          "en": "Technical documentation"
         }
       ]
     },

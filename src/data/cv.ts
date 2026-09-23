@@ -59,6 +59,8 @@ export interface CV {
     linkedin: string
     github: string
     site: string
+    /** Short tags shown under the title: the developer half of the profile. */
+    focus: (string | L10n)[]
   }
   about: { es: string[]; en: string[] }
   /** Shorter third-person summary used by the PDF résumé. */

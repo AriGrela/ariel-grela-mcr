@@ -71,6 +71,7 @@ export function McrHud() {
         </h1>
         <p className="hud-title">{tr(cv.person.title, lang)}</p>
         <p className="hud-tagline">{tr(cv.person.tagline, lang)}</p>
+        <FocusTags />
         <ul className="hud-stats">
           {cv.stats.map((s) => (
             <li key={s.value}>
@@ -82,38 +83,59 @@ export function McrHud() {
         <CtaRow compact />
       </aside>
 
-      <nav className="hud hud-right" aria-label={t.sources}>
-        <p className="hud-kicker">{t.sources} · ROUTER</p>
-        <ol className="src-list">
+      <nav className="hud hud-right router" aria-label={t.sources}>
+        <header className="router-head">
+          <span>ROUTER</span>
+          <span className="router-dest">
+            DEST <b>PGM</b>
+          </span>
+        </header>
+        <ol className="router-list">
           {SECTIONS.map((s) => {
             const state = onAir === s.id ? 'pgm' : preview === s.id || hover === s.id ? 'pvw' : ''
             return (
               <li key={s.id}>
                 <button
                   type="button"
-                  className={`src ${state}`}
+                  className={`router-btn ${state}`}
+                  style={{ ['--accent' as string]: s.accent }}
                   onClick={() => take(s.id)}
                   onMouseEnter={() => setState({ hover: s.id })}
                   onMouseLeave={() => setState({ hover: null })}
                   onFocus={() => setState({ hover: s.id })}
                   onBlur={() => setState({ hover: null })}
                 >
-                  <span className="src-key">{s.key}</span>
-                  <span className="src-body">
-                    <span className="src-label">{tr(s.label, lang)}</span>
-                    <span className="src-blurb">{tr(s.blurb, lang)}</span>
+                  <span className="router-key">{s.key}</span>
+                  <span className="router-text">
+                    <span className="router-label">{tr(s.label, lang)}</span>
+                    <span className="router-blurb">{tr(s.blurb, lang)}</span>
                   </span>
-                  <span className="src-tag">{s.src}</span>
+                  <span className="router-tally" aria-hidden="true" />
                 </button>
               </li>
             )
           })}
         </ol>
+        <p className="router-foot" aria-hidden="true">
+          <kbd>1</kbd>–<kbd>8</kbd> {lang === 'es' ? 'seleccionar' : 'select'} · <kbd>ESC</kbd> {lang === 'es' ? 'volver' : 'back'}
+        </p>
       </nav>
 
       <div className="hud-hint" aria-hidden="true">
         <span className="hint-dot" /> {t.hint3d} <kbd>1</kbd>–<kbd>8</kbd> · <kbd>ESC</kbd>
       </div>
     </>
+  )
+}
+
+/** The developer half of the profile at a glance: languages, tools, AI. */
+export function FocusTags() {
+  const { lang } = useT()
+  return (
+    <ul className="focus-tags" aria-label={lang === 'es' ? 'Foco técnico' : 'Technical focus'}>
+      {cv.person.focus.map((f) => (
+        <li key={tr(f, 'en')}>{tr(f, lang)}</li>
+      ))}
+    </ul>
   )
 }

@@ -47,7 +47,7 @@ def og():
     d.text((64, 250), "GRELA", font=cond(150), fill=RED)
     d.rectangle((68, 408, 150, 414), fill=RED)
     d.text((64, 432), "Media Technology · Streaming Operations", font=cond(38), fill="#e8edf2")
-    d.text((64, 478), "Implementation & Automation", font=cond(38), fill="#aab4c0")
+    d.text((64, 478), "Implementation · Automation · Applied AI", font=cond(38), fill="#aab4c0")
     d.text((64, 556), "DISNEY STREAMING · ESPN · LVP — BUENOS AIRES", font=mono(20), fill="#6d7a89")
 
     # Mini multiviewer.
