@@ -1,5 +1,9 @@
 # MCR-01 · Ariel Grela
 
+**En vivo:** https://arielgrela.vercel.app · [versión en inglés](https://arielgrela.vercel.app/?lang=en) · [CV simple](https://arielgrela.vercel.app/#cv)
+
+![Control room 3D](docs/screenshot.jpg)
+
 Portfolio / CV interactivo con forma de **master control room**: una pared de monitores en 3D, un switcher con teclas físicas y una terminal. Cada monitor es una sección del CV; tocarlo (o apretar `1`–`8`) lo pasa a PVW, hace el AUTO con la T-bar y lo saca al aire.
 
 - **3D** (desktop): React Three Fiber + postprocessing. Se carga aparte (lazy), así que la vista 2D y el CV no pagan el peso de three.js.
