@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { PerformanceMonitor, RoundedBox, Stats } from '@react-three/drei'
-import { Bloom, EffectComposer, SMAA, Vignette } from '@react-three/postprocessing'
+import { PerformanceMonitor, RoundedBox } from '@react-three/drei'
+import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { tr } from '../data/cv'
@@ -641,11 +641,40 @@ function Quality() {
         <EffectComposer multisampling={0}>
           <Bloom mipmapBlur levels={tier === 2 ? 5 : 4} intensity={0.9} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
           <Vignette offset={0.28} darkness={0.8} />
-          {tier === 2 ? <SMAA /> : <></>}
+
         </EffectComposer>
       )}
     </>
   )
+}
+
+/** `?stats`: tiny FPS / resolution readout, to compare machines without devtools. */
+function FpsMeter() {
+  const gl = useThree((s) => s.gl)
+  const el = useMemo(() => {
+    const d = document.createElement('div')
+    d.style.cssText =
+      'position:fixed;left:8px;bottom:8px;z-index:99;font:12px/1.4 monospace;color:#39ff88;background:#000c;padding:4px 8px;border-radius:4px;pointer-events:none'
+    return d
+  }, [])
+  const acc = useRef({ frames: 0, since: performance.now() })
+  useEffect(() => {
+    document.body.appendChild(el)
+    return () => el.remove()
+  }, [el])
+  useFrame(() => {
+    const a = acc.current
+    a.frames++
+    const now = performance.now()
+    if (now - a.since >= 500) {
+      const fps = (a.frames * 1000) / (now - a.since)
+      const c = gl.domElement
+      el.textContent = `${fps.toFixed(0)} fps · ${c.width}×${c.height} · dpr ${gl.getPixelRatio().toFixed(2)} · ${gl.info.render.calls} calls`
+      a.frames = 0
+      a.since = now
+    }
+  })
+  return null
 }
 
 /** While a section panel covers the room, stop rendering it (the last frame stays on screen). */
@@ -676,7 +705,8 @@ export default function ControlRoom() {
       <CameraRig />
       <FrameloopSync />
       <Quality />
-      {QS.has('stats') && <Stats />}
+      {QS.has('stats') && <FpsMeter />}
+
     </Canvas>
   )
 }
