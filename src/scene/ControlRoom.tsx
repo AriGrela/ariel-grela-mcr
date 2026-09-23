@@ -556,8 +556,9 @@ function hudInsets(width: number) {
   const left = document.querySelector('.hud-left')?.getBoundingClientRect()
   const right = document.querySelector('.hud-right')?.getBoundingClientRect()
   return {
-    left: left && left.width > 50 ? left.right + 12 : 0,
-    right: right && right.width > 50 ? width - right.left + 12 : 0,
+    // Panels slid off-screen (HUD hidden) stop reserving space, so the room re-centres.
+    left: left && left.width > 50 ? Math.max(0, left.right + 12) : 0,
+    right: right && right.width > 50 ? Math.max(0, width - right.left + 12) : 0,
   }
 }
 
@@ -574,7 +575,8 @@ function CameraRig() {
   useFrame((_, dt) => {
     const s = getState()
     const aspect = size.width / size.height
-    if (frame.current++ % 20 === 0) insets.current = hudInsets(size.width)
+    // Measured every few frames; the HUD slide animation is tracked smoothly enough.
+    if (frame.current++ % 4 === 0) insets.current = hudInsets(size.width)
     const inside = !!s.onAir
     const { left, right } = inside ? { left: 0, right: 0 } : insets.current
     const free = Math.max(0.4, (size.width - left - right) / size.width)

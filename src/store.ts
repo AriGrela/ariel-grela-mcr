@@ -22,6 +22,8 @@ export interface State {
   pressedAt: Partial<Record<SectionId | 'cut' | 'auto', number>>
   /** The 2D view was picked because WebGL runs without a GPU; shows a notice. */
   softwareFallback: boolean
+  /** Side panels of the 3D view slid out of the way. */
+  hudHidden: boolean
 }
 
 const safeGet = (k: string) => {
@@ -76,6 +78,7 @@ let state: State = {
   lang: initialLang(),
   view: firstView,
   softwareFallback: firstView === 'lite' && canRun3D() && gpuInfo().software,
+  hudHidden: safeGet('mcr-hud') === 'off',
   booted: deepLinked || location.hash === '#cv' || new URLSearchParams(location.search).has('noboot'),
   preview: null,
   hover: null,
@@ -179,6 +182,17 @@ export function setView(view: View) {
   setState({ view, panelOpen: false, onAir: null, preview: null, hover: null, softwareFallback: false })
   setHash(view === 'cv' ? 'cv' : '')
   window.scrollTo(0, 0)
+}
+
+export function toggleHud() {
+  const hudHidden = !state.hudHidden
+  safeSet('mcr-hud', hudHidden ? 'off' : 'on')
+  setState({ hudHidden })
+}
+
+export function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
+  else document.documentElement.requestFullscreen?.().catch(() => {})
 }
 
 export function finishBoot() {

@@ -60,6 +60,10 @@ const STRINGS = {
     swNotice:
       'Tu navegador está dibujando el 3D sin placa de video (aceleración por hardware desactivada), así que te muestro el multiviewer 2D.',
     swTry3d: 'Ver el 3D igual',
+    hudHide: 'Ocultar paneles (H)',
+    hudShow: 'Mostrar paneles (H)',
+    fsEnter: 'Pantalla completa (F)',
+    fsExit: 'Salir de pantalla completa (F)',
   },
   en: {
     onAir: 'ON AIR',
@@ -119,6 +123,10 @@ const STRINGS = {
     swNotice:
       'Your browser is rendering 3D without a GPU (hardware acceleration is off), so here is the 2D multiviewer.',
     swTry3d: 'Show the 3D anyway',
+    hudHide: 'Hide panels (H)',
+    hudShow: 'Show panels (H)',
+    fsEnter: 'Full screen (F)',
+    fsExit: 'Exit full screen (F)',
   },
 }
 

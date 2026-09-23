@@ -1,11 +1,12 @@
 import { Component, lazy, Suspense, useEffect, type ReactNode } from 'react'
 import { SECTIONS } from './sections'
-import { backToMultiviewer, getState, setState, syncFromHash, take, useStore } from './store'
+import { backToMultiviewer, getState, setState, syncFromHash, take, toggleFullscreen, toggleHud, useStore } from './store'
 import Boot from './ui/Boot'
 import { McrHud, TopBar } from './ui/Hud'
 import Lite from './ui/Lite'
 import SectionPanel from './ui/SectionPanel'
 import SimpleCV from './ui/SimpleCV'
+import ControlKeys from './ui/ControlKeys'
 
 const ControlRoom = lazy(() => import('./scene/ControlRoom'))
 
@@ -32,6 +33,14 @@ function useKeyboard() {
       if (s.view === 'cv' || !s.booted) return
       if (e.key === 'Escape' && s.panelOpen) {
         backToMultiviewer()
+        return
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen()
+        return
+      }
+      if ((e.key === 'h' || e.key === 'H') && s.view === 'mcr' && !s.panelOpen) {
+        toggleHud()
         return
       }
       const n = Number(e.key)
@@ -87,6 +96,7 @@ export default function App() {
         </>
       )}
       {view === 'lite' && <Lite />}
+      {view === 'mcr' && booted && <ControlKeys />}
       {view === 'cv' && <SimpleCV />}
       {view !== 'cv' && <SectionPanel />}
       {!booted && view !== 'cv' && <Boot />}

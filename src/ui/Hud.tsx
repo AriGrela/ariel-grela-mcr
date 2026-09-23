@@ -61,10 +61,11 @@ export function McrHud() {
   const preview = useStore((s) => s.preview)
   const onAir = useStore((s) => s.onAir)
   const panelOpen = useStore((s) => s.panelOpen)
+  const hidden = useStore((s) => s.hudHidden)
   if (panelOpen) return null
   return (
     <>
-      <aside className="hud hud-left">
+      <aside className={`hud hud-left ${hidden ? 'is-hidden' : ''}`} aria-hidden={hidden || undefined} inert={hidden || undefined}>
         <p className="hud-kicker">{tr(cv.person.location, lang)} · UTC−3</p>
         <h1 className="hud-name">
           Ariel <span>Grela</span>
@@ -83,7 +84,7 @@ export function McrHud() {
         <CtaRow compact />
       </aside>
 
-      <nav className="hud hud-right router" aria-label={t.sources}>
+      <nav className={`hud hud-right router ${hidden ? 'is-hidden' : ''}`} aria-label={t.sources} inert={hidden || undefined}>
         <header className="router-head">
           <span>ROUTER</span>
           <span className="router-dest">
