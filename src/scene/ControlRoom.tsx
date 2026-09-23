@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { MeshReflectorMaterial, RoundedBox } from '@react-three/drei'
-import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
-import { useMemo, useRef } from 'react'
+import { PerformanceMonitor, RoundedBox, Stats } from '@react-three/drei'
+import { Bloom, EffectComposer, SMAA, Vignette } from '@react-three/postprocessing'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { tr } from '../data/cv'
 import { SECTIONS, type SectionId } from '../sections'
@@ -20,11 +20,17 @@ interface Surface {
   h: number
 }
 
-function surface(w: number, h: number): Surface {
+/**
+ * A 2D canvas used as a texture. `w`/`h` are the logical size the painters draw
+ * in; `scale` shrinks the backing store (the monitors are small on screen, so
+ * full-size canvases only cost upload bandwidth).
+ */
+function surface(w: number, h: number, scale = 1): Surface {
   const canvas = document.createElement('canvas')
-  canvas.width = w
-  canvas.height = h
-  const ctx = canvas.getContext('2d')!
+  canvas.width = Math.round(w * scale)
+  canvas.height = Math.round(h * scale)
+  const ctx = canvas.getContext('2d', { alpha: false })!
+  ctx.setTransform(scale, 0, 0, scale, 0, 0)
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   tex.minFilter = THREE.LinearFilter
@@ -43,10 +49,17 @@ interface Surfaces {
 }
 
 function createSurfaces(): Surfaces {
-  const sources = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(512, 288)])) as Record<SectionId, Surface>
+  const sources = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(512, 288, 0.8)])) as Record<SectionId, Surface>
   const keys = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(128, 128)])) as Record<SectionId, Surface>
-  const deco = Object.fromEntries(DECO_PLACEMENTS.map((d) => [d.id, surface(384, 216)])) as Record<DecoId, Surface>
-  return { sources, keys, deco, slate: surface(1024, 576), bars: surface(512, 288), sign: surface(512, 128) }
+  const deco = Object.fromEntries(DECO_PLACEMENTS.map((d) => [d.id, surface(384, 216, 0.75)])) as Record<DecoId, Surface>
+  return {
+    sources,
+    keys,
+    deco,
+    slate: surface(1024, 576, 0.75),
+    bars: surface(512, 288, 0.8),
+    sign: surface(512, 128, 0.5),
+  }
 }
 
 const tallyFor = (id: SectionId): Tally => {
@@ -56,39 +69,90 @@ const tallyFor = (id: SectionId): Tally => {
   return null
 }
 
-/** Repaints every screen ~15 times per second (decorative ones at half rate). */
+interface Job {
+  every: number
+  last: number
+  /** Painted again right away when this changes (e.g. the tally colour). */
+  sig: () => string
+  lastSig: string
+  active: () => boolean
+  run: (t: number) => void
+}
+
+/** Max canvases repainted (and uploaded to the GPU) per frame. */
+const PAINT_BUDGET = 3
+
+/**
+ * Repaints the animated screens round-robin: a few per frame instead of all
+ * of them at once, so texture uploads never spike into a dropped frame.
+ * Sources refresh ~10 fps, engineering screens ~5 fps.
+ */
 function Painter({ sf }: { sf: Surfaces }) {
-  const acc = useRef(0)
-  const tick = useRef(0)
   const keySig = useRef('')
-  useFrame(({ clock }, dt) => {
-    acc.current += dt
-    if (acc.current < 1 / 15) return
-    acc.current = 0
-    tick.current++
+  const jobs = useMemo<Job[]>(() => {
+    const job = (
+      surf: Surface,
+      every: number,
+      paint: (t: number) => void,
+      sig: () => string = () => getState().lang,
+      active: () => boolean = () => true,
+    ): Job => ({
+      every,
+      last: -1,
+      sig,
+      lastSig: '',
+      active,
+      run: (t) => {
+        paint(t)
+        surf.tex.needsUpdate = true
+      },
+    })
+    const ctxOf = (surf: Surface, t: number, tally: Tally) => ({
+      ctx: surf.ctx,
+      w: surf.w,
+      h: surf.h,
+      t,
+      lang: getState().lang,
+      tally,
+    })
+    return [
+      ...SECTIONS.map((sec) =>
+        job(
+          sf.sources[sec.id],
+          1 / 10,
+          (t) => paintSource(sec.id, ctxOf(sf.sources[sec.id], t, tallyFor(sec.id))),
+          () => `${getState().lang}|${tallyFor(sec.id)}`,
+        ),
+      ),
+      job(sf.slate, 1 / 12, (t) => paintSlate(ctxOf(sf.slate, t, 'pgm')), undefined, () => !getState().onAir),
+      job(
+        sf.bars,
+        1 / 8,
+        (t) => paintBars(ctxOf(sf.bars, t, 'pvw')),
+        undefined,
+        () => !getState().hover && !getState().preview,
+      ),
+      ...DECO_PLACEMENTS.map((d) => job(sf.deco[d.id], 1 / 5, (t) => paintDeco(d.id, ctxOf(sf.deco[d.id], t, null)))),
+    ]
+  }, [sf])
+
+  useFrame(({ clock }) => {
     const s = getState()
     const t = clock.elapsedTime
     const lang = s.lang
-    for (const sec of SECTIONS) {
-      const surf = sf.sources[sec.id]
-      paintSource(sec.id, { ctx: surf.ctx, w: surf.w, h: surf.h, t, lang, tally: tallyFor(sec.id) })
-      surf.tex.needsUpdate = true
+    const due: { job: Job; urgency: number }[] = []
+    for (const j of jobs) {
+      if (!j.active()) continue
+      if (j.sig() !== j.lastSig) due.push({ job: j, urgency: Infinity })
+      else if (t - j.last >= j.every) due.push({ job: j, urgency: t - j.last - j.every })
     }
-    if (!s.onAir) {
-      paintSlate({ ctx: sf.slate.ctx, w: sf.slate.w, h: sf.slate.h, t, lang, tally: 'pgm' })
-      sf.slate.tex.needsUpdate = true
+    due.sort((x, y) => y.urgency - x.urgency)
+    for (const { job } of due.slice(0, PAINT_BUDGET)) {
+      job.run(t)
+      job.last = t
+      job.lastSig = job.sig()
     }
-    if (!s.hover && !s.preview) {
-      paintBars({ ctx: sf.bars.ctx, w: sf.bars.w, h: sf.bars.h, t, lang, tally: 'pvw' })
-      sf.bars.tex.needsUpdate = true
-    }
-    if (tick.current % 2 === 0) {
-      for (const d of DECO_PLACEMENTS) {
-        const surf = sf.deco[d.id]
-        paintDeco(d.id, { ctx: surf.ctx, w: surf.w, h: surf.h, t, lang, tally: null })
-        surf.tex.needsUpdate = true
-      }
-    }
+
     // Key caps and the ON AIR sign only change with state.
     const sig = `${lang}|${s.onAir}|${s.preview}|${s.hover}|${document.fonts?.status}`
     if (sig !== keySig.current) {
@@ -460,22 +524,10 @@ function Room() {
       </mesh>
       <Switcher sf={sf} />
 
-      {/* Floor */}
+      {/* Floor: a plain glossy plane. A real-time reflector re-rendered the whole room every frame. */}
       <mesh rotation-x={-Math.PI / 2} position={[0, -1.03, 3]}>
         <planeGeometry args={[40, 24]} />
-        <MeshReflectorMaterial
-          blur={[300, 90]}
-          resolution={512}
-          mixBlur={1}
-          mixStrength={22}
-          roughness={0.85}
-          depthScale={1}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color="#060606"
-          metalness={0.6}
-          mirror={0.6}
-        />
+        <meshStandardMaterial color="#060607" metalness={0.7} roughness={0.45} />
       </mesh>
     </>
   )
@@ -543,18 +595,77 @@ function CameraRig() {
 }
 
 const QS = new URLSearchParams(location.search)
-const FX = !QS.has('nofx')
 // Only for automated screenshots: keeps the last frame readable by capture tools.
 const SHOT = QS.has('shot')
 
+/**
+ * Quality tiers. The room starts at the tier the URL asks for (?quality=low|mid|high)
+ * or "high", and PerformanceMonitor steps it down when the frame rate drops.
+ *
+ * Cost is dominated by fill rate, so each tier caps the number of rendered
+ * pixels rather than trusting devicePixelRatio: a 4K screen at 150 % scaling
+ * would otherwise push ~8 M pixels through bloom every frame.
+ *   2: up to ~3.7 MP (1440p), bloom + vignette
+ *   1: up to ~2.1 MP (1080p), bloom + vignette
+ *   0: up to ~1.4 MP, no post-processing
+ */
+type Tier = 0 | 1 | 2
+const TIER_PIXELS = [1.4e6, 2.1e6, 3.7e6]
+const TIER_MAX_DPR = [1, 1.25, 1.5]
+const initialTier = (): Tier => {
+  if (QS.has('nofx')) return 0
+  const q = QS.get('quality')
+  return q === 'low' ? 0 : q === 'mid' ? 1 : 2
+}
+
+function Quality() {
+  const [tier, setTier] = useState<Tier>(initialTier)
+  const setDpr = useThree((s) => s.setDpr)
+  const { width, height } = useThree((s) => s.size)
+  useEffect(() => {
+    const budget = Math.sqrt(TIER_PIXELS[tier] / Math.max(1, width * height))
+    setDpr(Math.max(0.6, Math.min(window.devicePixelRatio || 1, TIER_MAX_DPR[tier], budget)))
+  }, [tier, width, height, setDpr])
+  const locked = QS.has('quality') || QS.has('nofx')
+  return (
+    <>
+      {!locked && (
+        <PerformanceMonitor
+          flipflops={3}
+          onDecline={() => setTier((t) => Math.max(0, t - 1) as Tier)}
+          onIncline={() => setTier((t) => Math.min(2, t + 1) as Tier)}
+          onFallback={() => setTier(0)}
+        />
+      )}
+      {tier > 0 && (
+        <EffectComposer multisampling={0}>
+          <Bloom mipmapBlur levels={tier === 2 ? 5 : 4} intensity={0.9} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
+          <Vignette offset={0.28} darkness={0.8} />
+          {tier === 2 ? <SMAA /> : <></>}
+        </EffectComposer>
+      )}
+    </>
+  )
+}
+
+/** While a section panel covers the room, stop rendering it (the last frame stays on screen). */
+function FrameloopSync() {
+  const setFrameloop = useThree((s) => s.setFrameloop)
+  const open = useStore((s) => s.panelOpen)
+  useEffect(() => {
+    setFrameloop(open ? 'demand' : 'always')
+  }, [open, setFrameloop])
+  return null
+}
+
+// Nothing here subscribes to the store, so opening a section never re-renders
+// the Canvas or rebuilds the post-processing buffers (that flashed black).
 export default function ControlRoom() {
-  const panelOpen = useStore((s) => s.panelOpen)
   return (
     <Canvas
       className="mcr-canvas"
       aria-hidden="true"
-      dpr={[1, 1.75]}
-      frameloop={panelOpen ? 'demand' : 'always'}
+      dpr={1}
       camera={{ fov: 40, position: [0, 5.5, 17], near: 0.1, far: 60 }}
       gl={{ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: SHOT }}
       onPointerMissed={() => setState({ hover: null })}
@@ -563,12 +674,9 @@ export default function ControlRoom() {
       <fog attach="fog" args={['#000', 12, 28]} />
       <Room />
       <CameraRig />
-      {FX && (
-        <EffectComposer multisampling={4}>
-          <Bloom mipmapBlur intensity={0.9} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
-          <Vignette offset={0.28} darkness={0.8} />
-        </EffectComposer>
-      )}
+      <FrameloopSync />
+      <Quality />
+      {QS.has('stats') && <Stats />}
     </Canvas>
   )
 }

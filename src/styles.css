@@ -587,7 +587,7 @@ kbd {
     0 0 0 4px rgba(255, 43, 43, 0.12),
     0 0 60px rgba(255, 43, 43, 0.18),
     0 40px 120px rgba(0, 0, 0, 0.8);
-  animation: panel-in 0.45s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  animation: panel-in 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 .panel-head {
   display: flex;
@@ -653,7 +653,7 @@ kbd {
   scrollbar-color: #2a3038 transparent;
 }
 .signal-lock {
-  animation: signal-lock 0.5s steps(1, end) both;
+  animation: signal-lock 0.28s steps(3, end);
 }
 .panel-foot {
   display: flex;
@@ -2011,37 +2011,25 @@ a.clip:hover {
     transform: translateX(24px);
   }
 }
+/* No clip-path or opacity-0 frames here: on a dark room they read as a black flash. */
 @keyframes panel-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.94);
-    clip-path: inset(49% 0 49% 0);
-  }
-  45% {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-  }
-  100% {
-    transform: scale(1);
+  from {
+    opacity: 0.35;
+    transform: translateY(10px) scale(0.985);
   }
 }
+/* A quick horizontal "sync" wobble when the source changes; the content never disappears. */
 @keyframes signal-lock {
   0% {
-    opacity: 0;
+    transform: translateX(3px);
+    filter: saturate(1.6) hue-rotate(25deg);
   }
-  15% {
-    opacity: 1;
-    filter: hue-rotate(90deg) saturate(3);
-    transform: translateX(4px);
+  25% {
+    transform: translateX(-2px);
   }
-  30% {
-    opacity: 0.6;
-    filter: none;
-    transform: translateX(-3px);
-  }
-  45% {
-    opacity: 1;
+  50% {
     transform: none;
+    filter: none;
   }
 }
 @keyframes slide-down {
