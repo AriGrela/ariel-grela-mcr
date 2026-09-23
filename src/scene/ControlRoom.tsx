@@ -1,12 +1,13 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { PerformanceMonitor, RoundedBox } from '@react-three/drei'
+import { RoundedBox } from '@react-three/drei'
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import * as THREE from 'three'
 import { tr } from '../data/cv'
 import { SECTIONS, type SectionId } from '../sections'
-import { backToMultiviewer, getState, setState, take, useStore } from '../store'
+import { backToMultiviewer, getState, setState, subscribe, take, useStore } from '../store'
 import { CONSOLE, DECO_PLACEMENTS, PGM_PLACEMENT, PVW_PLACEMENT, SOURCE_PLACEMENTS, type Placement } from './layout'
+import { gpuInfo } from '../gpu'
 import { F, paintBars, paintDeco, paintKeyCap, paintSlate, paintSource, type DecoId, type Tally } from './screens'
 
 const QS = new URLSearchParams(location.search)
@@ -590,6 +591,7 @@ function CameraRig() {
       wantLook.set(pointer.x * 0.12, 1.6, 0)
     }
     const k = 1 - Math.exp(-dt * (inside ? 3.6 : 2.0))
+    perf.cameraMoving = camera.position.distanceToSquared(wantPos) > 1e-4
     camera.position.lerp(wantPos, k)
     look.current.lerp(wantLook, k)
     camera.lookAt(look.current)
@@ -610,63 +612,154 @@ function CameraRig() {
 // Only for automated screenshots: keeps the last frame readable by capture tools.
 const SHOT = QS.has('shot')
 
+/* ------------------------------------------------------------------ */
+/* Performance                                                         */
+/* ------------------------------------------------------------------ */
+
 /**
- * Quality tiers. The room starts at the tier the URL asks for (?quality=low|mid|high)
- * or "high", and PerformanceMonitor steps it down when the frame rate drops.
- *
- * Cost is dominated by fill rate, so each tier caps the number of rendered
- * pixels rather than trusting devicePixelRatio: a 4K screen at 150 % scaling
- * would otherwise push ~8 M pixels through bloom every frame.
- *   2: up to ~3.7 MP (1440p), bloom + vignette
- *   1: up to ~2.1 MP (1080p), bloom + vignette
- *   0: up to ~1.4 MP, no post-processing
+ * Quality tiers. Resolution never drops below 1:1 (that made text blurry);
+ * the tiers trade effects and frame rate instead.
+ *   2: bloom + vignette, up to 1.5x on HiDPI screens (capped at ~3.7 MP), 60 fps
+ *   1: bloom + vignette, 1x-1.25x, 60 fps               <- starting point
+ *   0: no post-processing, 1x, 30 fps
+ * When nothing moves the room renders at IDLE_FPS: the screens only change
+ * ~8 times a second anyway, so rendering more just heats the GPU.
  */
 type Tier = 0 | 1 | 2
-const TIER_PIXELS = [1.4e6, 2.1e6, 3.7e6]
-const TIER_MAX_DPR = [1, 1.25, 1.5]
-const initialTier = (): Tier => {
-  if (QS.has('nofx')) return 0
-  const q = QS.get('quality')
-  return q === 'low' ? 0 : q === 'mid' ? 1 : 2
+const MAX_FPS = Number(QS.get('fps')) || 60
+const IDLE_FPS = 24
+const LOCKED_TIER: Tier | null = QS.has('nofx')
+  ? 0
+  : QS.get('quality') === 'low'
+    ? 0
+    : QS.get('quality') === 'mid'
+      ? 1
+      : QS.get('quality') === 'high'
+        ? 2
+        : null
+
+const perf = {
+  tier: (LOCKED_TIER ?? 1) as Tier,
+  lastActivity: performance.now(),
+  cameraMoving: true,
+}
+const tierListeners = new Set<() => void>()
+function setTier(t: Tier) {
+  if (t === perf.tier) return
+  perf.tier = t
+  tierListeners.forEach((l) => l())
+}
+const useTier = () =>
+  useSyncExternalStore(
+    (l) => {
+      tierListeners.add(l)
+      return () => tierListeners.delete(l)
+    },
+    () => perf.tier,
+  )
+const poke = () => {
+  perf.lastActivity = performance.now()
 }
 
 function Quality() {
-  const [tier, setTier] = useState<Tier>(initialTier)
+  const tier = useTier()
   const setDpr = useThree((s) => s.setDpr)
   const { width, height } = useThree((s) => s.size)
   useEffect(() => {
-    const budget = Math.sqrt(TIER_PIXELS[tier] / Math.max(1, width * height))
-    setDpr(Math.max(0.6, Math.min(window.devicePixelRatio || 1, TIER_MAX_DPR[tier], budget)))
+    const device = window.devicePixelRatio || 1
+    const cap = tier === 2 ? Math.min(1.5, Math.sqrt(3.7e6 / Math.max(1, width * height))) : tier === 1 ? 1.25 : 1
+    setDpr(Math.max(1, Math.min(device, cap)))
   }, [tier, width, height, setDpr])
-  const locked = QS.has('quality') || QS.has('nofx')
+  if (tier === 0) return null
   return (
-    <>
-      {!locked && (
-        <PerformanceMonitor
-          flipflops={3}
-          onDecline={() => setTier((t) => Math.max(0, t - 1) as Tier)}
-          onIncline={() => setTier((t) => Math.min(2, t + 1) as Tier)}
-          onFallback={() => setTier(0)}
-        />
-      )}
-      {tier > 0 && (
-        <EffectComposer multisampling={0}>
-          <Bloom mipmapBlur levels={tier === 2 ? 5 : 4} intensity={0.9} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
-          <Vignette offset={0.28} darkness={0.8} />
-
-        </EffectComposer>
-      )}
-    </>
+    <EffectComposer multisampling={0}>
+      <Bloom mipmapBlur levels={tier === 2 ? 5 : 4} intensity={0.9} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
+      <Vignette offset={0.28} darkness={0.8} />
+    </EffectComposer>
   )
 }
 
-/** `?stats`: tiny FPS / resolution readout, to compare machines without devtools. */
+/**
+ * Drives the render loop (the Canvas renders on demand):
+ * - at most 60 fps while something moves, IDLE_FPS otherwise;
+ * - nothing at all while a section panel covers the room;
+ * - measures the frame rate it actually gets while active and steps the
+ *   quality tier down after a slow 1.5 s window (up once, if it is smooth).
+ */
+function FrameLimiter() {
+  const invalidate = useThree((s) => s.invalidate)
+  const open = useStore((s) => s.panelOpen)
+
+  useEffect(() => {
+    const onInput = () => poke()
+    window.addEventListener('pointermove', onInput, { passive: true })
+    window.addEventListener('wheel', onInput, { passive: true })
+    window.addEventListener('keydown', onInput)
+    const unsub = subscribe(onInput)
+    return () => {
+      window.removeEventListener('pointermove', onInput)
+      window.removeEventListener('wheel', onInput)
+      window.removeEventListener('keydown', onInput)
+      unsub()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (open) return
+    poke()
+    let raf = 0
+    let last = 0
+    // Skip the first second: shader compilation and texture uploads are not representative.
+    let windowStart = performance.now() + 1000
+    let windowFrames = 0
+    let smoothWindows = 0
+    let raised = false
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick)
+      const idle = now - perf.lastActivity > 2500 && !perf.cameraMoving
+      const target = idle ? IDLE_FPS : perf.tier === 0 ? Math.min(30, MAX_FPS) : MAX_FPS
+      // Small slack so a 60 Hz display isn't rounded down to 30 fps.
+      if (now - last >= 1000 / target - 2) {
+        last = now
+        invalidate()
+        windowFrames++
+      }
+      if (idle || now < windowStart) {
+        if (idle) windowStart = now
+        windowFrames = 0
+        return
+      }
+      const span = now - windowStart
+      if (span < 1500 || LOCKED_TIER !== null) return
+      const fps = (windowFrames * 1000) / span
+      if (fps < target * 0.75 && perf.tier > 0) {
+        setTier((perf.tier - 1) as Tier)
+        smoothWindows = 0
+      } else if (fps >= target * 0.95) {
+        if (++smoothWindows >= 4 && perf.tier < 2 && !raised) {
+          raised = true
+          setTier((perf.tier + 1) as Tier)
+          smoothWindows = 0
+        }
+      } else {
+        smoothWindows = 0
+      }
+      windowStart = now + 500 // let a tier change settle before measuring again
+      windowFrames = 0
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [open, invalidate])
+  return null
+}
+
+/** `?stats`: tiny readout (fps, render time, resolution, tier, GPU) to compare machines without devtools. */
 function FpsMeter() {
   const gl = useThree((s) => s.gl)
   const el = useMemo(() => {
     const d = document.createElement('div')
     d.style.cssText =
-      'position:fixed;left:8px;bottom:8px;z-index:99;font:12px/1.4 monospace;color:#39ff88;background:#000c;padding:4px 8px;border-radius:4px;pointer-events:none'
+      'position:fixed;left:8px;bottom:8px;z-index:99;font:12px/1.4 monospace;color:#39ff88;background:#000c;padding:4px 8px;border-radius:4px;pointer-events:none;max-width:calc(100vw - 16px)'
     return d
   }, [])
   const acc = useRef({ frames: 0, since: performance.now(), renderMs: 0 })
@@ -691,7 +784,10 @@ function FpsMeter() {
       const fps = (a.frames * 1000) / (now - a.since)
       const c = gl.domElement
       const ms = a.renderMs / Math.max(1, a.frames)
-      el.textContent = `${fps.toFixed(0)} fps · render ${ms.toFixed(1)} ms · ${c.width}×${c.height} · dpr ${gl.getPixelRatio().toFixed(2)} · ${GPU_CANVAS ? 'gpu' : 'cpu'} canvas${PAINT_OFF ? ' · paint off' : ''}`
+      const idle = now - perf.lastActivity > 2500 && !perf.cameraMoving
+      el.textContent =
+        `${fps.toFixed(0)} fps${idle ? ' (idle)' : ''} · render ${ms.toFixed(1)} ms · ${c.width}×${c.height} · tier ${perf.tier}` +
+        ` · ${GPU_CANVAS ? 'gpu' : 'cpu'} canvas${PAINT_OFF ? ' · paint off' : ''} · ${gpuInfo().renderer}`
       a.frames = 0
       a.renderMs = 0
       a.since = now
@@ -709,36 +805,6 @@ function DebugHandle() {
   return null
 }
 
-const MAX_FPS = Number(QS.get('fps')) || 60
-
-/**
- * Drives the render loop at most MAX_FPS times a second. On 144/165 Hz
- * monitors the default loop rendered the room 144+ times a second and kept
- * the GPU pinned for no visible gain. While a section panel covers the room
- * nothing is rendered at all (the last frame stays on screen).
- */
-function FrameLimiter() {
-  const invalidate = useThree((s) => s.invalidate)
-  const open = useStore((s) => s.panelOpen)
-  useEffect(() => {
-    if (open) return
-    const interval = 1000 / MAX_FPS
-    let last = 0
-    let raf = 0
-    const tick = (now: number) => {
-      raf = requestAnimationFrame(tick)
-      // Small slack so a 60 Hz display isn't rounded down to 30 fps.
-      if (now - last >= interval - 2) {
-        last = now
-        invalidate()
-      }
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [open, invalidate])
-  return null
-}
-
 // Nothing here subscribes to the store, so opening a section never re-renders
 // the Canvas or rebuilds the post-processing buffers (that flashed black).
 export default function ControlRoom() {
@@ -749,7 +815,7 @@ export default function ControlRoom() {
       dpr={1}
       frameloop="demand"
       camera={{ fov: 40, position: [0, 5.5, 17], near: 0.5, far: 40 }}
-      gl={{ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: SHOT }}
+      gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: SHOT }}
       onPointerMissed={() => setState({ hover: null })}
     >
       <color attach="background" args={['#000']} />
@@ -757,10 +823,9 @@ export default function ControlRoom() {
       <Room />
       <CameraRig />
       <FrameLimiter />
-      {SHOT && <DebugHandle />}
       <Quality />
+      {SHOT && <DebugHandle />}
       {QS.has('stats') && <FpsMeter />}
-
     </Canvas>
   )
 }

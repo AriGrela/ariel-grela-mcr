@@ -1626,6 +1626,20 @@ a.clip:hover {
     radial-gradient(ellipse at 20% 0%, rgba(255, 43, 43, 0.08), transparent 50%),
     radial-gradient(ellipse at 90% 10%, rgba(53, 208, 255, 0.06), transparent 50%);
 }
+.notice {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 176, 0, 0.35);
+  background: rgba(255, 176, 0, 0.07);
+  color: #f3dca8;
+  font-size: 14px;
+}
 .lite-pgm {
   position: relative;
   padding: 26px 22px 58px;

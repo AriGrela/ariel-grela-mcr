@@ -1,14 +1,23 @@
 import { cv, tr } from '../data/cv'
 import { useT } from '../i18n'
 import { SECTIONS } from '../sections'
-import { take } from '../store'
+import { setView, take, useStore } from '../store'
 import { CtaRow, Timecode } from './common'
 
 /** 2D multiviewer: used on phones, without WebGL, or when the viewer picks it. */
 export default function Lite() {
   const { t, lang } = useT()
+  const softwareFallback = useStore((s) => s.softwareFallback)
   return (
     <main className="lite">
+      {softwareFallback && (
+        <p className="notice" role="status">
+          <span>{t.swNotice}</span>
+          <button type="button" className="btn btn-ghost" onClick={() => setView('mcr')}>
+            {t.swTry3d}
+          </button>
+        </p>
+      )}
       <section className="lite-pgm" aria-labelledby="lite-name">
         <div className="lite-pgm-bars" aria-hidden="true">
           {['#c0c0c0', '#c0c000', '#00c0c0', '#00c000', '#c000c0', '#c00000', '#0000c0'].map((c) => (

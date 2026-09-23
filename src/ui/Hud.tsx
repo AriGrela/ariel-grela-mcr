@@ -1,7 +1,7 @@
 import { cv, tr } from '../data/cv'
 import { useT } from '../i18n'
 import { SECTIONS, sectionById } from '../sections'
-import { canRun3D, setLang, setState, setView, take, useStore, type View } from '../store'
+import { canRun3D, prefers3D, setLang, setState, setView, take, useStore, type View } from '../store'
 import { CtaRow, Timecode } from './common'
 
 export function TopBar() {
@@ -11,7 +11,7 @@ export function TopBar() {
   const views: View[] = canRun3D() ? ['mcr', 'lite', 'cv'] : ['lite', 'cv']
   return (
     <header className="topbar">
-      <button type="button" className="brand" onClick={() => setView(view === 'cv' ? (canRun3D() ? 'mcr' : 'lite') : view)}>
+      <button type="button" className="brand" onClick={() => setView(view === 'cv' ? (prefers3D() ? 'mcr' : 'lite') : view)}>
         <span className="brand-dot" aria-hidden="true" />
         <span className="brand-name">ARIEL GRELA</span>
         <span className="brand-sub">MCR-01</span>

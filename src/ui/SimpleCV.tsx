@@ -1,6 +1,6 @@
 import { cv, fmtMonth, tr } from '../data/cv'
 import { useT } from '../i18n'
-import { canRun3D, setView } from '../store'
+import { prefers3D, setView } from '../store'
 import { Icon, cvHref } from './common'
 
 /** Plain, printable résumé for recruiters and ATS-minded readers. */
@@ -9,7 +9,7 @@ export default function SimpleCV() {
   return (
     <main className="doc">
       <div className="doc-actions no-print">
-        <button type="button" className="btn" onClick={() => setView(canRun3D() ? 'mcr' : 'lite')}>
+        <button type="button" className="btn" onClick={() => setView(prefers3D() ? 'mcr' : 'lite')}>
           ← {t.openMcr}
         </button>
         <a className="btn btn-primary" href={cvHref(lang)} download>

@@ -57,6 +57,9 @@ const STRINGS = {
     footer: 'Diseñado y programado como un master control. Hecho con React, TypeScript y Three.js.',
     slateLine: 'Ingresá al aire',
     termHello: 'MCR-OS 1.0 — escribí help para ver los comandos.',
+    swNotice:
+      'Tu navegador está dibujando el 3D sin placa de video (aceleración por hardware desactivada), así que te muestro el multiviewer 2D.',
+    swTry3d: 'Ver el 3D igual',
   },
   en: {
     onAir: 'ON AIR',
@@ -113,6 +116,9 @@ const STRINGS = {
     footer: 'Designed and built like a master control room. Made with React, TypeScript and Three.js.',
     slateLine: 'Going live',
     termHello: 'MCR-OS 1.0 — type help to list commands.',
+    swNotice:
+      'Your browser is rendering 3D without a GPU (hardware acceleration is off), so here is the 2D multiviewer.',
+    swTry3d: 'Show the 3D anyway',
   },
 }
 

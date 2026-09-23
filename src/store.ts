@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import type { Lang } from './data/cv'
+import { gpuInfo } from './gpu'
 import { isSectionId, type SectionId } from './sections'
 
 export type View = 'mcr' | 'lite' | 'cv'
@@ -19,6 +20,8 @@ export interface State {
   transitionAt: number
   /** performance.now() of the last key press per section, drives key travel. */
   pressedAt: Partial<Record<SectionId | 'cut' | 'auto', number>>
+  /** The 2D view was picked because WebGL runs without a GPU; shows a notice. */
+  softwareFallback: boolean
 }
 
 const safeGet = (k: string) => {
@@ -44,31 +47,35 @@ function initialLang(): Lang {
   return navigator.language?.toLowerCase().startsWith('es') ? 'es' : 'en'
 }
 
-function supportsWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas')
-    return !!(c.getContext('webgl2') || c.getContext('webgl'))
-  } catch {
-    return false
-  }
-}
+/** The 3D room is offered on wide screens with WebGL. */
+export const canRun3D = () => gpuInfo().webgl && window.matchMedia('(min-width: 820px)').matches
 
-export const canRun3D = () =>
-  supportsWebGL() && window.matchMedia('(min-width: 820px)').matches
+/**
+ * It is only picked by default when WebGL runs on a real GPU: emulated WebGL
+ * (hardware acceleration off) makes the room crawl and heats up the machine.
+ */
+export const prefers3D = () => canRun3D() && !gpuInfo().software
 
 function initialView(): View {
   if (location.hash === '#cv') return 'cv'
+  const q = new URLSearchParams(location.search).get('view')
+  if (q === '3d' && canRun3D()) return 'mcr'
+  if (q === '2d') return 'lite'
   const saved = safeGet('mcr-view')
   if (saved === 'lite') return 'lite'
-  return canRun3D() ? 'mcr' : 'lite'
+  if (saved === 'mcr' && canRun3D()) return 'mcr'
+  return prefers3D() ? 'mcr' : 'lite'
 }
 
 const hashSection = location.hash.slice(1)
 const deepLinked = isSectionId(hashSection)
 
+const firstView = initialView()
+
 let state: State = {
   lang: initialLang(),
-  view: initialView(),
+  view: firstView,
+  softwareFallback: firstView === 'lite' && canRun3D() && gpuInfo().software,
   booted: deepLinked || location.hash === '#cv' || new URLSearchParams(location.search).has('noboot'),
   preview: null,
   hover: null,
@@ -87,6 +94,13 @@ export function getState() {
 export function setState(patch: Partial<State>) {
   state = { ...state, ...patch }
   listeners.forEach((l) => l())
+}
+
+export function subscribe(listener: () => void) {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
 }
 
 export function useStore<T>(select: (s: State) => T): T {
@@ -162,7 +176,7 @@ export function setLang(lang: Lang) {
 export function setView(view: View) {
   clearTimers()
   if (view !== 'cv') safeSet('mcr-view', view)
-  setState({ view, panelOpen: false, onAir: null, preview: null, hover: null })
+  setState({ view, panelOpen: false, onAir: null, preview: null, hover: null, softwareFallback: false })
   setHash(view === 'cv' ? 'cv' : '')
   window.scrollTo(0, 0)
 }
@@ -179,7 +193,7 @@ export function syncFromHash() {
     return
   }
   if (isSectionId(h)) {
-    if (state.view === 'cv') setState({ view: canRun3D() ? 'mcr' : 'lite' })
+    if (state.view === 'cv') setState({ view: prefers3D() ? 'mcr' : 'lite' })
     if (state.onAir !== h || !state.panelOpen) take(h, { instant: true })
   }
 }
