@@ -345,7 +345,7 @@ kbd {
   position: fixed;
   z-index: 10;
   top: 76px;
-  background: linear-gradient(180deg, rgba(6, 8, 11, 0.82), rgba(6, 8, 11, 0.66));
+  background: rgba(6, 8, 11, 0.92);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 20px;

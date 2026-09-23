@@ -9,9 +9,15 @@ import { backToMultiviewer, getState, setState, take, useStore } from '../store'
 import { CONSOLE, DECO_PLACEMENTS, PGM_PLACEMENT, PVW_PLACEMENT, SOURCE_PLACEMENTS, type Placement } from './layout'
 import { F, paintBars, paintDeco, paintKeyCap, paintSlate, paintSource, type DecoId, type Tally } from './screens'
 
+const QS = new URLSearchParams(location.search)
+
 /* ------------------------------------------------------------------ */
 /* Canvas-backed textures                                              */
 /* ------------------------------------------------------------------ */
+
+// Debug switches: ?canvas=gpu uses GPU-backed 2D canvases, ?paint=off freezes the screens.
+const GPU_CANVAS = QS.get('canvas') === 'gpu'
+const PAINT_OFF = QS.get('paint') === 'off'
 
 interface Surface {
   ctx: CanvasRenderingContext2D
@@ -22,19 +28,25 @@ interface Surface {
 
 /**
  * A 2D canvas used as a texture. `w`/`h` are the logical size the painters draw
- * in; `scale` shrinks the backing store (the monitors are small on screen, so
- * full-size canvases only cost upload bandwidth).
+ * in; `scale` shrinks the backing store (the monitors are small on screen).
+ *
+ * The canvas is kept in CPU memory (`willReadFrequently`). A GPU-backed 2D
+ * canvas makes Chrome synchronise its rasteriser with WebGL on every upload:
+ * that stalled the GPU (fans up, low fps, black browser tabs) and sometimes
+ * uploaded half-drawn frames, which showed as stripes and broken text.
  */
 function surface(w: number, h: number, scale = 1): Surface {
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(w * scale)
   canvas.height = Math.round(h * scale)
-  const ctx = canvas.getContext('2d', { alpha: false })!
+  const ctx = canvas.getContext('2d', { willReadFrequently: !GPU_CANVAS })!
   ctx.setTransform(scale, 0, 0, scale, 0, 0)
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
-  tex.minFilter = THREE.LinearFilter
-  tex.generateMipmaps = false
+  // Mipmaps keep thin text and scanlines from shimmering into moiré when a
+  // monitor is small on screen.
+  tex.minFilter = THREE.LinearMipmapLinearFilter
+  tex.generateMipmaps = true
   tex.anisotropy = 4
   return { ctx, tex, w, h }
 }
@@ -80,12 +92,12 @@ interface Job {
 }
 
 /** Max canvases repainted (and uploaded to the GPU) per frame. */
-const PAINT_BUDGET = 3
+const PAINT_BUDGET = 2
 
 /**
  * Repaints the animated screens round-robin: a few per frame instead of all
  * of them at once, so texture uploads never spike into a dropped frame.
- * Sources refresh ~10 fps, engineering screens ~5 fps.
+ * Sources refresh ~8 fps, engineering screens ~4 fps.
  */
 function Painter({ sf }: { sf: Surfaces }) {
   const keySig = useRef('')
@@ -97,7 +109,7 @@ function Painter({ sf }: { sf: Surfaces }) {
       sig: () => string = () => getState().lang,
       active: () => boolean = () => true,
     ): Job => ({
-      every,
+      every: PAINT_OFF ? Infinity : every,
       last: -1,
       sig,
       lastSig: '',
@@ -119,12 +131,12 @@ function Painter({ sf }: { sf: Surfaces }) {
       ...SECTIONS.map((sec) =>
         job(
           sf.sources[sec.id],
-          1 / 10,
+          1 / 8,
           (t) => paintSource(sec.id, ctxOf(sf.sources[sec.id], t, tallyFor(sec.id))),
           () => `${getState().lang}|${tallyFor(sec.id)}`,
         ),
       ),
-      job(sf.slate, 1 / 12, (t) => paintSlate(ctxOf(sf.slate, t, 'pgm')), undefined, () => !getState().onAir),
+      job(sf.slate, 1 / 10, (t) => paintSlate(ctxOf(sf.slate, t, 'pgm')), undefined, () => !getState().onAir),
       job(
         sf.bars,
         1 / 8,
@@ -132,7 +144,7 @@ function Painter({ sf }: { sf: Surfaces }) {
         undefined,
         () => !getState().hover && !getState().preview,
       ),
-      ...DECO_PLACEMENTS.map((d) => job(sf.deco[d.id], 1 / 5, (t) => paintDeco(d.id, ctxOf(sf.deco[d.id], t, null)))),
+      ...DECO_PLACEMENTS.map((d) => job(sf.deco[d.id], 1 / 4, (t) => paintDeco(d.id, ctxOf(sf.deco[d.id], t, null)))),
     ]
   }, [sf])
 
@@ -251,7 +263,8 @@ function Monitor({
       : {}
   return (
     <group position={p.pos} rotation-y={p.rotY}>
-      <RoundedBox args={[p.w + 0.1, p.h + 0.1, 0.1]} radius={0.025} smoothness={2} position-z={-0.05}>
+      {/* Bezel sits behind the screen; coplanar faces z-fought into stripes and missing text. */}
+      <RoundedBox args={[p.w + 0.1, p.h + 0.1, 0.1]} radius={0.025} smoothness={2} position-z={-0.07}>
         <meshStandardMaterial ref={bezel} color="#0f1114" metalness={0.6} roughness={0.45} />
       </RoundedBox>
       <mesh {...handlers}>
@@ -594,7 +607,6 @@ function CameraRig() {
   return null
 }
 
-const QS = new URLSearchParams(location.search)
 // Only for automated screenshots: keeps the last frame readable by capture tools.
 const SHOT = QS.has('shot')
 
@@ -657,11 +669,20 @@ function FpsMeter() {
       'position:fixed;left:8px;bottom:8px;z-index:99;font:12px/1.4 monospace;color:#39ff88;background:#000c;padding:4px 8px;border-radius:4px;pointer-events:none'
     return d
   }, [])
-  const acc = useRef({ frames: 0, since: performance.now() })
+  const acc = useRef({ frames: 0, since: performance.now(), renderMs: 0 })
   useEffect(() => {
     document.body.appendChild(el)
-    return () => el.remove()
-  }, [el])
+    const render = gl.render.bind(gl)
+    gl.render = (scene, camera) => {
+      const t0 = performance.now()
+      render(scene, camera)
+      acc.current.renderMs += performance.now() - t0
+    }
+    return () => {
+      gl.render = render
+      el.remove()
+    }
+  }, [el, gl])
   useFrame(() => {
     const a = acc.current
     a.frames++
@@ -669,21 +690,52 @@ function FpsMeter() {
     if (now - a.since >= 500) {
       const fps = (a.frames * 1000) / (now - a.since)
       const c = gl.domElement
-      el.textContent = `${fps.toFixed(0)} fps · ${c.width}×${c.height} · dpr ${gl.getPixelRatio().toFixed(2)} · ${gl.info.render.calls} calls`
+      const ms = a.renderMs / Math.max(1, a.frames)
+      el.textContent = `${fps.toFixed(0)} fps · render ${ms.toFixed(1)} ms · ${c.width}×${c.height} · dpr ${gl.getPixelRatio().toFixed(2)} · ${GPU_CANVAS ? 'gpu' : 'cpu'} canvas${PAINT_OFF ? ' · paint off' : ''}`
       a.frames = 0
+      a.renderMs = 0
       a.since = now
     }
   })
   return null
 }
 
-/** While a section panel covers the room, stop rendering it (the last frame stays on screen). */
-function FrameloopSync() {
-  const setFrameloop = useThree((s) => s.setFrameloop)
+/** `?shot`: lets automated checks render frames by hand while the tab is throttled. */
+function DebugHandle() {
+  const get = useThree((s) => s.get)
+  useEffect(() => {
+    ;(window as unknown as { __mcr?: typeof get }).__mcr = get
+  }, [get])
+  return null
+}
+
+const MAX_FPS = Number(QS.get('fps')) || 60
+
+/**
+ * Drives the render loop at most MAX_FPS times a second. On 144/165 Hz
+ * monitors the default loop rendered the room 144+ times a second and kept
+ * the GPU pinned for no visible gain. While a section panel covers the room
+ * nothing is rendered at all (the last frame stays on screen).
+ */
+function FrameLimiter() {
+  const invalidate = useThree((s) => s.invalidate)
   const open = useStore((s) => s.panelOpen)
   useEffect(() => {
-    setFrameloop(open ? 'demand' : 'always')
-  }, [open, setFrameloop])
+    if (open) return
+    const interval = 1000 / MAX_FPS
+    let last = 0
+    let raf = 0
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick)
+      // Small slack so a 60 Hz display isn't rounded down to 30 fps.
+      if (now - last >= interval - 2) {
+        last = now
+        invalidate()
+      }
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [open, invalidate])
   return null
 }
 
@@ -695,7 +747,8 @@ export default function ControlRoom() {
       className="mcr-canvas"
       aria-hidden="true"
       dpr={1}
-      camera={{ fov: 40, position: [0, 5.5, 17], near: 0.1, far: 60 }}
+      frameloop="demand"
+      camera={{ fov: 40, position: [0, 5.5, 17], near: 0.5, far: 40 }}
       gl={{ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: SHOT }}
       onPointerMissed={() => setState({ hover: null })}
     >
@@ -703,7 +756,8 @@ export default function ControlRoom() {
       <fog attach="fog" args={['#000', 12, 28]} />
       <Room />
       <CameraRig />
-      <FrameloopSync />
+      <FrameLimiter />
+      {SHOT && <DebugHandle />}
       <Quality />
       {QS.has('stats') && <FpsMeter />}
 
