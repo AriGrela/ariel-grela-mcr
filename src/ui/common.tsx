@@ -97,8 +97,8 @@ export function CtaRow({ compact = false }: { compact?: boolean }) {
   const { t, lang } = useT()
   return (
     <div className={`cta-row ${compact ? 'compact' : ''}`}>
-      <a className="btn btn-primary" href={cvHref(lang)} download>
-        <Icon name="download" /> {t.downloadCv}
+      <a className="btn btn-primary" href={cvHref(lang)} download aria-label={t.downloadCv}>
+        <Icon name="download" /> <span className="btn-label">{t.downloadCv}</span>
       </a>
       <a className="btn" href={cv.person.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
         <Icon name="linkedin" /> {!compact && 'LinkedIn'}

@@ -129,6 +129,37 @@ export function McrHud() {
   )
 }
 
+/**
+ * Phone version of the HUD: identity bar on top, contact bar at the bottom, so
+ * the portrait control room gets the middle of the screen.
+ */
+export function MobileHud() {
+  const { lang } = useT()
+  const panelOpen = useStore((s) => s.panelOpen)
+  const hidden = useStore((s) => s.hudHidden)
+  if (panelOpen) return null
+  return (
+    <>
+      <section className={`mhud-top ${hidden ? 'is-hidden' : ''}`}>
+        <div className="mhud-id">
+          <h1 className="mhud-name">
+            Ariel <span>Grela</span>
+          </h1>
+          <p className="mhud-title">{tr(cv.person.title, lang)}</p>
+        </div>
+        <FocusTags />
+      </section>
+      <section className="mhud-bottom">
+        <p className="mhud-hint">
+          <span className="hint-dot" aria-hidden="true" />
+          {lang === 'es' ? 'Tocá un monitor o una tecla del switcher' : 'Tap a monitor or a switcher key'}
+        </p>
+        <CtaRow compact />
+      </section>
+    </>
+  )
+}
+
 /** The developer half of the profile at a glance: languages, tools, AI. */
 export function FocusTags() {
   const { lang } = useT()

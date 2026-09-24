@@ -6,8 +6,10 @@
 
 Portfolio / CV interactivo con forma de **master control room**: una pared de monitores en 3D, un switcher con teclas físicas y una terminal. Cada monitor es una sección del CV; tocarlo (o apretar `1`–`8`) lo pasa a PVW, hace el AUTO con la T-bar y lo saca al aire.
 
-- **3D** (desktop): React Three Fiber + postprocessing. Se carga aparte (lazy), así que la vista 2D y el CV no pagan el peso de three.js.
-- **2D** (celulares, equipos sin WebGL o a elección): multiviewer en CSS.
+- **3D**: React Three Fiber + postprocessing. Se carga aparte (lazy), así que la vista 2D y el CV no pagan el peso de three.js.
+  - Desktop: pared de 2 + 8 monitores con alas, paneles laterales y router que se adapta al ancho.
+  - Celular vertical: el control room se reorganiza como un rack (PGM arriba, fuentes en 2 columnas, switcher compacto) con barras arriba y abajo. Acostado, los contactos pasan a una columna de íconos.
+- **2D** (equipos sin aceleración 3D o a elección): multiviewer en CSS con las mismas escenas animadas.
 - **CV** (`/#cv`): versión simple, imprimible, para recruiters y ATS.
 - Bilingüe ES/EN (`?lang=en` para compartir directo en inglés). Deep links: `/#experience`, `/#live`, `/#terminal`…
 

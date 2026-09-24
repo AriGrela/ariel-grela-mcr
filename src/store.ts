@@ -50,7 +50,8 @@ function initialLang(): Lang {
 }
 
 /** The 3D room is offered on wide screens with WebGL. */
-export const canRun3D = () => gpuInfo().webgl && window.matchMedia('(min-width: 820px)').matches
+/** The 3D room works on any screen with WebGL: phones get a portrait arrangement. */
+export const canRun3D = () => gpuInfo().webgl
 
 /**
  * It is only picked by default when WebGL runs on a real GPU: emulated WebGL
@@ -104,6 +105,20 @@ export function subscribe(listener: () => void) {
   return () => {
     listeners.delete(listener)
   }
+}
+
+const COMPACT_QUERY = '(max-width: 819px), (max-height: 499px)'
+
+/** Phones (and very short windows): the 3D view uses top/bottom bars instead of side panels. */
+export function useCompact(): boolean {
+  return useSyncExternalStore(
+    (l) => {
+      const mq = window.matchMedia(COMPACT_QUERY)
+      mq.addEventListener('change', l)
+      return () => mq.removeEventListener('change', l)
+    },
+    () => window.matchMedia(COMPACT_QUERY).matches,
+  )
 }
 
 export function useStore<T>(select: (s: State) => T): T {
@@ -166,7 +181,8 @@ export function take(id: SectionId, opts: { instant?: boolean } = {}) {
 
 export function backToMultiviewer() {
   clearTimers()
-  setState({ panelOpen: false, onAir: null, preview: null })
+  // Touch has no pointer-out, so a tapped monitor would otherwise stay highlighted.
+  setState({ panelOpen: false, onAir: null, preview: null, hover: null })
   setHash('')
 }
 

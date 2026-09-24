@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { tr } from '../data/cv'
 import { SECTIONS, type SectionId } from '../sections'
 import { backToMultiviewer, getState, setState, subscribe, take, useStore } from '../store'
-import { CONSOLE, DECO_PLACEMENTS, PGM_PLACEMENT, PVW_PLACEMENT, SOURCE_PLACEMENTS, type Placement } from './layout'
+import { ALL_DECOS, getLayout, type Layout, type Placement } from './layout'
 import { gpuInfo } from '../gpu'
 import { F, paintBars, paintDeco, paintKeyCap, paintSlate, paintSource, type DecoId, type Tally } from './screens'
 
@@ -64,7 +64,7 @@ interface Surfaces {
 function createSurfaces(): Surfaces {
   const sources = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(512, 288, 0.8)])) as Record<SectionId, Surface>
   const keys = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(256, 256)])) as Record<SectionId, Surface>
-  const deco = Object.fromEntries(DECO_PLACEMENTS.map((d) => [d.id, surface(384, 216, 0.75)])) as Record<DecoId, Surface>
+  const deco = Object.fromEntries(ALL_DECOS.map((d) => [d.id, surface(384, 216, 0.75)])) as Record<DecoId, Surface>
   return {
     sources,
     keys,
@@ -73,6 +73,14 @@ function createSurfaces(): Surfaces {
     bars: surface(512, 288, 0.8),
     sign: surface(512, 128, 0.5),
   }
+}
+
+/** Portrait (phones) or landscape arrangement, chosen from the canvas aspect ratio. */
+let activeLayout: Layout = getLayout(false)
+function useLayout(): Layout {
+  const portrait = useThree((st) => st.size.width / st.size.height < 0.9)
+  activeLayout = getLayout(portrait)
+  return activeLayout
 }
 
 const tallyFor = (id: SectionId): Tally => {
@@ -143,9 +151,18 @@ function Painter({ sf }: { sf: Surfaces }) {
         1 / 8,
         (t) => paintBars(ctxOf(sf.bars, t, 'pvw')),
         undefined,
-        () => !getState().hover && !getState().preview,
+        () => !!activeLayout.pvw && !getState().hover && !getState().preview,
       ),
-      ...DECO_PLACEMENTS.map((d) => job(sf.deco[d.id], 1 / 4, (t) => paintDeco(d.id, ctxOf(sf.deco[d.id], t, null)))),
+      // Engineering screens only exist in the landscape room.
+      ...ALL_DECOS.map((d) =>
+        job(
+          sf.deco[d.id],
+          1 / 4,
+          (t) => paintDeco(d.id, ctxOf(sf.deco[d.id], t, null)),
+          undefined,
+          () => activeLayout.decos.length > 0,
+        ),
+      ),
     ]
   }, [sf])
 
@@ -420,29 +437,31 @@ function TBar({ x }: { x: number }) {
   )
 }
 
-function Switcher({ sf }: { sf: Surfaces }) {
-  const lang = useStore((s) => s.lang)
-  const keyX = (i: number) => -2.35 + i * 0.47
+function Switcher({ sf, L }: { sf: Surfaces; L: Layout }) {
+  const c = L.console
   return (
-    <group position={CONSOLE.pos} rotation-x={CONSOLE.tilt}>
-      <RoundedBox args={[CONSOLE.width, 0.16, CONSOLE.depth]} radius={0.04} smoothness={3}>
+    <group position={c.pos} rotation-x={c.tilt}>
+      <RoundedBox args={[c.width, 0.16, c.depth]} radius={0.04} smoothness={3}>
         <meshStandardMaterial color="#1b1f24" metalness={0.55} roughness={0.42} />
       </RoundedBox>
       <group position-y={0.08}>
-        {/* Program bus */}
-        {SECTIONS.map((s, i) => (
-          <BusKey key={s.id} id={s.id} x={keyX(i)} z={-0.38} />
-        ))}
+        {/* Program bus (wide console only) */}
+        {c.bus &&
+          SECTIONS.map((s, i) => {
+            const [x, z] = c.bus!(i)
+            return <BusKey key={s.id} id={s.id} x={x} z={z} />
+          })}
         {/* Source select / preview bus */}
-        {SECTIONS.map((s, i) => (
-          <SourceKey key={s.id} id={s.id} x={keyX(i)} z={0.12} tex={sf.keys[s.id].tex} />
-        ))}
-        <ActionKey kind="cut" x={1.62} z={-0.3} label="CUT" />
-        <ActionKey kind="auto" x={1.62} z={0.2} label={lang === 'es' ? 'AUTO' : 'AUTO'} />
-        <TBar x={2.3} />
+        {SECTIONS.map((s, i) => {
+          const [x, z] = c.key(i)
+          return <SourceKey key={s.id} id={s.id} x={x} z={z} tex={sf.keys[s.id].tex} />
+        })}
+        <ActionKey kind="cut" x={c.cut[0]} z={c.cut[1]} label="CUT" />
+        <ActionKey kind="auto" x={c.auto[0]} z={c.auto[1]} label="AUTO" />
+        <TBar x={c.tbar} />
         {/* Status strip */}
-        <mesh position={[-0.5, 0.005, 0.52]}>
-          <boxGeometry args={[4.3, 0.01, 0.04]} />
+        <mesh position={[c.stripX, 0.005, c.depth / 2 - 0.15]}>
+          <boxGeometry args={[c.stripW, 0.01, 0.04]} />
           <meshBasicMaterial color={[0.6, 0.05, 0.05]} toneMapped={false} />
         </mesh>
       </group>
@@ -456,6 +475,7 @@ function Switcher({ sf }: { sf: Surfaces }) {
 
 function Room() {
   const sf = useMemo(() => createSurfaces(), [])
+  const L = useLayout()
   const pvwMap = () => {
     const s = getState()
     const id = s.hover ?? s.preview
@@ -484,27 +504,27 @@ function Room() {
         <planeGeometry args={[26, 10]} />
         <meshStandardMaterial color="#07080a" roughness={0.95} />
       </mesh>
-      {[-3.95, 3.95].map((x) => (
-        <mesh key={x} position={[x, 2.0, -0.1]}>
-          <boxGeometry args={[0.025, 4.4, 0.02]} />
+      {[-L.trims.x, L.trims.x].map((x) => (
+        <mesh key={x} position={[x, L.trims.y, -0.1]}>
+          <boxGeometry args={[0.025, L.trims.h, 0.02]} />
           <meshBasicMaterial color={[0.15, 0.35, 1.6]} toneMapped={false} />
         </mesh>
       ))}
-      <mesh position={[0, -0.12, 0.1]}>
-        <boxGeometry args={[7.6, 0.02, 0.02]} />
+      <mesh position={[0, L.strip.y, 0.1]}>
+        <boxGeometry args={[L.strip.w, 0.02, 0.02]} />
         <meshBasicMaterial color={[1.4, 0.08, 0.08]} toneMapped={false} />
       </mesh>
 
       {/* ON AIR sign */}
-      <mesh position={[0, 4.5, 0.05]}>
-        <planeGeometry args={[1.3, 0.325]} />
+      <mesh position={L.sign.pos}>
+        <planeGeometry args={[L.sign.w, L.sign.h]} />
         <meshBasicMaterial ref={signMat} map={sf.sign.tex} toneMapped={false} />
       </mesh>
 
       {/* Multiviewer wall */}
-      <Monitor p={PVW_PLACEMENT} map={pvwMap} lamp={() => 'pvw'} />
+      {L.pvw && <Monitor p={L.pvw} map={pvwMap} lamp={() => 'pvw'} />}
       <Monitor
-        p={PGM_PLACEMENT}
+        p={L.pgm}
         map={pgmMap}
         lamp={() => 'pgm'}
         onClick={() => {
@@ -514,32 +534,33 @@ function Room() {
         }}
       />
       {SECTIONS.map((s) => (
-        <Monitor key={s.id} p={SOURCE_PLACEMENTS[s.id]} map={() => sf.sources[s.id].tex} id={s.id} lamp={() => tallyFor(s.id)} />
+        <Monitor key={s.id} p={L.sources[s.id]} map={() => sf.sources[s.id].tex} id={s.id} lamp={() => tallyFor(s.id)} />
       ))}
 
       {/* Side wings with engineering screens */}
-      {[-1, 1].map((side) => (
+      {L.decos.length > 0 &&
+        [-1, 1].map((side) => (
         <mesh key={side} position={[side * 5.2, 1.95, 0.8]} rotation-y={-side * 0.52}>
           <boxGeometry args={[2.1, 3.5, 0.06]} />
           <meshStandardMaterial color="#0a0b0d" roughness={0.8} />
         </mesh>
       ))}
-      {DECO_PLACEMENTS.map((d) => (
+      {L.decos.map((d) => (
         <Monitor key={d.id} p={d.p} map={() => sf.deco[d.id].tex} />
       ))}
 
       {/* Desk */}
-      <RoundedBox args={[10, 0.1, 1.9]} radius={0.04} position={[0, -0.3, 2.95]}>
+      <RoundedBox args={[L.desk.w, 0.1, L.desk.d]} radius={0.04} position={L.desk.pos}>
         <meshStandardMaterial color="#0c0e11" metalness={0.5} roughness={0.35} />
       </RoundedBox>
-      <mesh position={[0, -0.68, 3.1]}>
-        <boxGeometry args={[9.8, 0.7, 1.4]} />
+      <mesh position={L.desk.bodyPos}>
+        <boxGeometry args={[L.desk.bodyW, 0.7, 1.4]} />
         <meshStandardMaterial color="#050607" roughness={0.9} />
       </mesh>
-      <Switcher sf={sf} />
+      <Switcher sf={sf} L={L} />
 
       {/* Floor: a plain glossy plane. A real-time reflector re-rendered the whole room every frame. */}
-      <mesh rotation-x={-Math.PI / 2} position={[0, -1.03, 3]}>
+      <mesh rotation-x={-Math.PI / 2} position={[0, L.floorY, 3]}>
         <planeGeometry args={[40, 24]} />
         <meshStandardMaterial color="#060607" metalness={0.7} roughness={0.45} />
       </mesh>
@@ -551,47 +572,78 @@ function Room() {
 /* Camera                                                              */
 /* ------------------------------------------------------------------ */
 
-/** Width in px covered by the HTML HUD panels on each side of the viewport. */
-function hudInsets(width: number) {
-  const left = document.querySelector('.hud-left')?.getBoundingClientRect()
-  const right = document.querySelector('.hud-right')?.getBoundingClientRect()
+/** Px covered by HTML overlays on each edge: side panels on desktop, top/bottom bars on phones. */
+function hudInsets(width: number, height: number) {
+  const rect = (sel: string) => {
+    const r = document.querySelector(sel)?.getBoundingClientRect()
+    return r && r.width > 50 ? r : null
+  }
+  const left = rect('.hud-left')
+  const right = rect('.hud-right')
+  const top = rect('.mhud-top')
+  const bottom = rect('.mhud-bottom')
+  // On a phone lying sideways the contact bar becomes a column on the right edge.
+  const bottomIsColumn = !!bottom && bottom.height > bottom.width
   return {
     // Panels slid off-screen (HUD hidden) stop reserving space, so the room re-centres.
-    left: left && left.width > 50 ? Math.max(0, left.right + 12) : 0,
-    right: right && right.width > 50 ? Math.max(0, width - right.left + 12) : 0,
+    left: left ? Math.max(0, left.right + 12) : 0,
+    right: Math.max(
+      right ? width - right.left + 12 : 0,
+      bottom && bottomIsColumn ? width - bottom.left + 8 : 0,
+    ),
+    top: top ? Math.max(0, top.bottom + 8) : 0,
+    bottom: bottom && !bottomIsColumn ? Math.max(0, height - bottom.top + 8) : 0,
   }
 }
 
-const TAN_HALF_FOV = Math.tan(THREE.MathUtils.degToRad(20))
+const FOV = { landscape: 40, portrait: 50 }
+const tanHalf = (fov: number) => Math.tan(THREE.MathUtils.degToRad(fov / 2))
+const NO_INSETS = { left: 0, right: 0, top: 0, bottom: 0 }
 
 function CameraRig() {
   const { camera, size, pointer } = useThree()
+  const L = useLayout()
   const look = useRef(new THREE.Vector3(0, 3.5, 0))
   const wantPos = useMemo(() => new THREE.Vector3(), [])
   const wantLook = useMemo(() => new THREE.Vector3(), [])
-  const insets = useRef({ left: 0, right: 0 })
-  const shift = useRef(0)
+  const insets = useRef(NO_INSETS)
+  const shift = useRef({ x: 0, y: 0 })
   const frame = useRef(0)
   useFrame((_, dt) => {
     const s = getState()
+    const cam = camera as THREE.PerspectiveCamera
+    const fov = L.portrait ? FOV.portrait : FOV.landscape
+    if (cam.fov !== fov) {
+      cam.fov = fov
+      cam.updateProjectionMatrix()
+    }
     const aspect = size.width / size.height
     // Measured every few frames; the HUD slide animation is tracked smoothly enough.
-    if (frame.current++ % 4 === 0) insets.current = hudInsets(size.width)
+    if (frame.current++ % 4 === 0) insets.current = hudInsets(size.width, size.height)
     const inside = !!s.onAir
-    const { left, right } = inside ? { left: 0, right: 0 } : insets.current
-    const free = Math.max(0.4, (size.width - left - right) / size.width)
+    const { left, right, top, bottom } = inside ? NO_INSETS : insets.current
+    const freeX = Math.max(0.4, (size.width - left - right) / size.width)
+    const freeY = Math.max(0.45, (size.height - top - bottom) / size.height)
+    const th = tanHalf(fov)
 
     if (inside) {
-      const p = SOURCE_PLACEMENTS[s.onAir!]
+      const p = L.sources[s.onAir!]
       const dist = 1.5 * Math.max(1, 1.5 / aspect)
       wantLook.set(p.pos[0], p.pos[1], p.pos[2])
       wantPos.set(p.pos[0] + Math.sin(p.rotY) * dist, p.pos[1], p.pos[2] + Math.cos(p.rotY) * dist)
+    } else if (L.portrait) {
+      // Phone: fit the column (3.9 wide, sign to switcher ~7.5 tall) between the top and bottom bars.
+      // The switcher sits closer to the camera, so it projects lower: aim below the wall's centre.
+      const fitW = 3.9 / (2 * th * aspect * freeX)
+      const fitH = 8.4 / (2 * th * freeY)
+      const dist = THREE.MathUtils.clamp(Math.max(fitW, fitH), 6, 17)
+      wantPos.set(0, 2.1, dist)
+      wantLook.set(0, 1.95, 0)
     } else {
-      // Frame the main wall (7 units wide) in the space between the HUD panels,
-      // but never closer than what keeps the ON AIR sign and the switcher in shot.
+      // Frame the main wall (7 units wide) in the space between the HUD panels;
       // 9 is the closest distance that still keeps the ON AIR sign and the whole switcher in shot.
-      const fitWidth = 7.4 / (2 * TAN_HALF_FOV * aspect * free)
-      const dist = THREE.MathUtils.clamp(fitWidth, 9, 14)
+      const fitWidth = 7.4 / (2 * th * aspect * freeX)
+      const dist = THREE.MathUtils.clamp(Math.max(fitWidth, 9 / freeY), 9, 14)
       wantPos.set(pointer.x * 0.4, 1.95 + pointer.y * 0.18 + (dist - 8.6) * 0.06, dist)
       wantLook.set(pointer.x * 0.1, 1.72, 0)
     }
@@ -602,11 +654,11 @@ function CameraRig() {
     camera.lookAt(look.current)
 
     // Shift the projection so the room is centred in the free area, not the full window.
-    const wantShift = (left - right) / 2
-    shift.current += (wantShift - shift.current) * k
-    const cam = camera as THREE.PerspectiveCamera
-    if (Math.abs(shift.current) > 0.5) {
-      cam.setViewOffset(size.width, size.height, -shift.current, 0, size.width, size.height)
+    const sh = shift.current
+    sh.x += ((left - right) / 2 - sh.x) * k
+    sh.y += ((top - bottom) / 2 - sh.y) * k
+    if (Math.abs(sh.x) > 0.5 || Math.abs(sh.y) > 0.5) {
+      cam.setViewOffset(size.width, size.height, -sh.x, -sh.y, size.width, size.height)
     } else if (cam.view) {
       cam.clearViewOffset()
     }
@@ -624,9 +676,9 @@ const SHOT = QS.has('shot')
 /**
  * Quality tiers. Resolution never drops below 1:1 (that made text blurry);
  * the tiers trade effects and frame rate instead.
- *   2: bloom + vignette, up to 1.5x on HiDPI screens (capped at ~3.7 MP), 60 fps
- *   1: bloom + vignette, 1x-1.25x, 60 fps               <- starting point
- *   0: no post-processing, 1x, 30 fps
+ *   2: bloom + vignette, up to ~3.7 MP rendered, 60 fps
+ *   1: bloom + vignette, up to ~2.1 MP rendered, 60 fps   <- starting point
+ *   0: no post-processing, up to ~1.2 MP rendered, 30 fps
  * When nothing moves the room renders at IDLE_FPS: the screens only change
  * ~8 times a second anyway, so rendering more just heats the GPU.
  */
@@ -672,7 +724,10 @@ function Quality() {
   const { width, height } = useThree((s) => s.size)
   useEffect(() => {
     const device = window.devicePixelRatio || 1
-    const cap = tier === 2 ? Math.min(1.5, Math.sqrt(3.7e6 / Math.max(1, width * height))) : tier === 1 ? 1.25 : 1
+    // A pixel budget per tier instead of a fixed ratio: big monitors stay at 1:1,
+    // phones (few CSS pixels, 3x screens) get up to 2x so text on the monitors stays sharp.
+    const budget = [1.2e6, 2.1e6, 3.7e6][tier]
+    const cap = Math.min(2, Math.sqrt(budget / Math.max(1, width * height)))
     setDpr(Math.max(1, Math.min(device, cap)))
   }, [tier, width, height, setDpr])
   if (tier === 0) return null

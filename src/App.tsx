@@ -1,8 +1,8 @@
 import { Component, lazy, Suspense, useEffect, type ReactNode } from 'react'
 import { SECTIONS } from './sections'
-import { backToMultiviewer, getState, setState, syncFromHash, take, toggleFullscreen, toggleHud, useStore } from './store'
+import { backToMultiviewer, getState, setState, syncFromHash, take, toggleFullscreen, toggleHud, useCompact, useStore } from './store'
 import Boot from './ui/Boot'
-import { McrHud, TopBar } from './ui/Hud'
+import { McrHud, MobileHud, TopBar } from './ui/Hud'
 import Lite from './ui/Lite'
 import SectionPanel from './ui/SectionPanel'
 import SimpleCV from './ui/SimpleCV'
@@ -67,6 +67,7 @@ export default function App() {
   const view = useStore((s) => s.view)
   const booted = useStore((s) => s.booted)
   const lang = useStore((s) => s.lang)
+  const compact = useCompact()
   useKeyboard()
 
   useEffect(() => {
@@ -92,11 +93,11 @@ export default function App() {
               <ControlRoom />
             </Suspense>
           </SceneBoundary>
-          {booted && <McrHud />}
+          {booted && (compact ? <MobileHud /> : <McrHud />)}
         </>
       )}
       {view === 'lite' && <Lite />}
-      {view === 'mcr' && booted && <ControlKeys />}
+      {view === 'mcr' && booted && !compact && <ControlKeys />}
       {view === 'cv' && <SimpleCV />}
       {view !== 'cv' && <SectionPanel />}
       {!booted && view !== 'cv' && <Boot />}
