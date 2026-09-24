@@ -108,6 +108,9 @@ kbd {
     transform 0.1s;
   white-space: nowrap;
 }
+.btn svg {
+  flex: none;
+}
 .btn:hover {
   background: rgba(255, 255, 255, 0.09);
   border-color: rgba(255, 255, 255, 0.3);
@@ -135,8 +138,21 @@ kbd {
   flex-wrap: wrap;
   gap: 8px;
 }
+.cta-row.compact {
+  gap: 6px;
+}
 .cta-row.compact .btn:not(.btn-primary) {
-  padding: 9px 11px;
+  padding: 9px 10px;
+}
+/* Narrow panels: download button on its own full-width row, icon buttons shared evenly below. */
+@media (max-width: 1360px) {
+  .hud-left .cta-row.compact .btn {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+  .hud-left .cta-row.compact .btn-primary {
+    flex-basis: 100%;
+  }
 }
 
 .chips {
@@ -429,6 +445,9 @@ kbd {
 }
 
 /* Focus tags under the title */
+.hud-left .cta-row {
+  margin-top: 14px;
+}
 .focus-tags {
   list-style: none;
   margin: 14px 0 0;
@@ -718,17 +737,47 @@ kbd {
   animation: pulse 1.6s infinite;
 }
 
-/* The source list duplicates the 3D switcher, so on narrower screens it is
-   kept only for keyboard and screen-reader users. */
+/* ---------- HUD responsiveness ----------
+   The side panels never disappear; they get denser as space runs out:
+   wide  (>=1600) full router with blurbs
+   laptop (1200-1599) compact router, no blurbs
+   narrow (<1200) the router becomes a rail of numbered keys with fly-out labels
+   Short screens trim the profile panel, and both panels scroll if they still don't fit. */
+.hud {
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.hud::-webkit-scrollbar {
+  display: none;
+}
+
 @media (max-width: 1599px) {
-  .hud-right:not(:focus-within) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    border: 0;
+  .hud-right {
+    width: 236px;
+  }
+  .router-blurb {
+    display: none;
+  }
+  .router-list {
+    gap: 5px;
+  }
+  .router-btn {
+    grid-template-columns: 34px 1fr 8px;
+    gap: 10px;
+    padding: 6px 10px 6px 6px;
+  }
+  .router-key {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+  .router-label {
+    font-size: 16px;
+  }
+  .router-tally {
+    width: 8px;
+    height: 8px;
   }
 }
 @media (max-width: 1360px) {
@@ -739,21 +788,133 @@ kbd {
     font-size: 46px;
   }
 }
-@media (max-width: 1140px) {
+
+/* Rail mode */
+@media (max-width: 1199px) {
+  .hud-left {
+    width: 264px;
+    padding: 16px;
+  }
+  .hud-name {
+    font-size: 40px;
+  }
   .view-mcr .hud-stats {
     display: none;
   }
-}
-@media (max-height: 800px) {
-  .view-mcr .hud-stats {
+  .hud-right {
+    width: 68px;
+    overflow: visible;
+  }
+  .router {
+    overflow: visible;
+  }
+  .router-head {
+    justify-content: center;
+    padding: 8px 4px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+  .router-head > span:first-child {
+    display: none;
+  }
+  .router-dest {
+    font-size: 0;
+  }
+  .router-dest b {
+    margin: 0;
+    font-size: 11px;
+  }
+  .router-list {
+    padding: 8px 6px;
+  }
+  .router-btn {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 5px 0;
+    border-left-width: 1px;
+    border-bottom: 3px solid var(--accent);
+  }
+  .router-btn:hover,
+  .router-btn:focus-visible {
+    transform: none;
+  }
+  .router-key {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .router-tally {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
+  /* Label flies out to the left of the key on hover / focus. */
+  .router-text {
+    position: absolute;
+    right: calc(100% + 12px);
+    top: 50%;
+    transform: translate(6px, -50%);
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line-2);
+    border-right: 3px solid var(--accent);
+    background: #0b0e12;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
+  .router-btn:hover .router-text,
+  .router-btn:focus-visible .router-text {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+  .router-text .router-blurb {
+    display: block;
+  }
+  .router-foot {
     display: none;
   }
 }
-@media (max-height: 680px) {
+
+/* Short screens (laptops at 768-900 px tall) */
+@media (max-height: 860px) {
+  .view-mcr .hud-stats {
+    display: none;
+  }
+  .hud {
+    top: 68px;
+  }
+  .router-btn {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .router-key {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+  .router-foot {
+    display: none;
+  }
+}
+@media (max-height: 700px) {
   .view-mcr .hud-tagline {
     display: none;
   }
+  .hud-name {
+    font-size: 38px;
+  }
+  .router-list {
+    gap: 3px;
+  }
 }
+
 
 /* ------------------------------------------------------------------ */
 /* Section panel (program output)                                      */
