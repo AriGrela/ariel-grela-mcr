@@ -455,6 +455,69 @@ export function paintSource(id: SectionId, p: PaintCtx) {
   p.ctx.restore()
 }
 
+/**
+ * Phone version of a source: the same animated scene as a background, with a
+ * big legible caption on top (key number, section name, one-line blurb).
+ * On a phone each monitor is ~170 px wide, too small for the detailed screens.
+ */
+export function paintSourceCard(id: SectionId, p: PaintCtx) {
+  const { ctx, w, h, lang, tally } = p
+  paintSource(id, { ...p, tally: null })
+  const sec = sectionById(id)
+  ctx.save()
+  const g = ctx.createLinearGradient(0, h * 0.25, 0, h)
+  g.addColorStop(0, 'rgba(0,0,0,0.05)')
+  g.addColorStop(0.45, 'rgba(0,0,0,0.82)')
+  g.addColorStop(1, 'rgba(0,0,0,0.94)')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, w, h)
+
+  // Key number badge, coloured like the tally.
+  const color = tally === 'pgm' ? RED : tally === 'pvw' ? GREEN : sec.accent
+  const bs = h * 0.3
+  const bx = w * 0.05
+  const by = h * 0.5
+  ctx.fillStyle = tally ? color : '#11151a'
+  ctx.fillRect(bx, by, bs, bs)
+  ctx.strokeStyle = color
+  ctx.lineWidth = h * 0.018
+  ctx.strokeRect(bx, by, bs, bs)
+  ctx.fillStyle = tally ? '#000' : '#fff'
+  ctx.font = `700 ${bs * 0.8}px ${F.cond}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(String(sec.key), bx + bs / 2, by + bs / 2 + bs * 0.04)
+
+  // Section name, as large as the width allows.
+  const name = tr(sec.label, lang).toUpperCase()
+  const tx = bx + bs + w * 0.045
+  const maxW = w - tx - w * 0.04
+  let size = h * 0.24
+  ctx.font = `700 ${size}px ${F.cond}`
+  const fit = maxW / ctx.measureText(name).width
+  if (fit < 1) {
+    size *= fit
+    ctx.font = `700 ${size}px ${F.cond}`
+  }
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillStyle = '#fff'
+  ctx.fillText(name, tx, by + bs * 0.62)
+  ctx.font = `600 ${h * 0.085}px ${F.sans}`
+  ctx.fillStyle = '#c3cbd4'
+  ctx.fillText(tr(sec.blurb, lang), tx, by + bs * 0.98, maxW)
+
+  // Accent line on top edge + tally frame.
+  ctx.fillStyle = sec.accent
+  ctx.fillRect(0, 0, w, h * 0.022)
+  if (tally) {
+    ctx.strokeStyle = color
+    ctx.lineWidth = Math.max(6, w * 0.016)
+    ctx.strokeRect(ctx.lineWidth / 2, ctx.lineWidth / 2, w - ctx.lineWidth, h - ctx.lineWidth)
+  }
+  ctx.restore()
+}
+
 /* ------------------------------------------------------------------ */
 /* Program slate, preview bars and decorative wall screens             */
 /* ------------------------------------------------------------------ */

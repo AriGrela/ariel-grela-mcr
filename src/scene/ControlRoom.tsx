@@ -8,7 +8,7 @@ import { SECTIONS, type SectionId } from '../sections'
 import { backToMultiviewer, getState, setState, subscribe, take, useStore } from '../store'
 import { ALL_DECOS, getLayout, type Layout, type Placement } from './layout'
 import { gpuInfo } from '../gpu'
-import { F, paintBars, paintDeco, paintKeyCap, paintSlate, paintSource, type DecoId, type Tally } from './screens'
+import { F, paintSourceCard, paintBars, paintDeco, paintKeyCap, paintSlate, paintSource, type DecoId, type Tally } from './screens'
 
 const QS = new URLSearchParams(location.search)
 
@@ -62,14 +62,18 @@ interface Surfaces {
 }
 
 function createSurfaces(): Surfaces {
-  const sources = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(512, 288, 0.8)])) as Record<SectionId, Surface>
+  // High-density touch screens (phones) show each monitor with more device pixels than a
+  // desktop does, so their canvases get a bigger backing store to stay sharp.
+  const dense = window.devicePixelRatio >= 1.75 && window.matchMedia('(pointer: coarse)').matches
+  const srcScale = dense ? 1.25 : 0.8
+  const sources = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(512, 288, srcScale)])) as Record<SectionId, Surface>
   const keys = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(256, 256)])) as Record<SectionId, Surface>
   const deco = Object.fromEntries(ALL_DECOS.map((d) => [d.id, surface(384, 216, 0.75)])) as Record<DecoId, Surface>
   return {
     sources,
     keys,
     deco,
-    slate: surface(1024, 576, 0.75),
+    slate: surface(1024, 576, dense ? 1 : 0.75),
     bars: surface(512, 288, 0.8),
     sign: surface(512, 128, 0.5),
   }
@@ -141,8 +145,9 @@ function Painter({ sf }: { sf: Surfaces }) {
         job(
           sf.sources[sec.id],
           1 / 8,
-          (t) => paintSource(sec.id, ctxOf(sf.sources[sec.id], t, tallyFor(sec.id))),
-          () => `${getState().lang}|${tallyFor(sec.id)}`,
+          (t) =>
+            (activeLayout.portrait ? paintSourceCard : paintSource)(sec.id, ctxOf(sf.sources[sec.id], t, tallyFor(sec.id))),
+          () => `${getState().lang}|${tallyFor(sec.id)}|${activeLayout.portrait}`,
         ),
       ),
       job(sf.slate, 1 / 10, (t) => paintSlate(ctxOf(sf.slate, t, 'pgm')), undefined, () => !getState().onAir),
@@ -634,7 +639,7 @@ function CameraRig() {
     } else if (L.portrait) {
       // Phone: fit the column (3.9 wide, sign to switcher ~7.5 tall) between the top and bottom bars.
       // The switcher sits closer to the camera, so it projects lower: aim below the wall's centre.
-      const fitW = 3.9 / (2 * th * aspect * freeX)
+      const fitW = 3.75 / (2 * th * aspect * freeX)
       const fitH = 8.4 / (2 * th * freeY)
       const dist = THREE.MathUtils.clamp(Math.max(fitW, fitH), 6, 17)
       wantPos.set(0, 2.1, dist)
@@ -720,6 +725,7 @@ const poke = () => {
 
 function Quality() {
   const tier = useTier()
+  const portrait = useLayout().portrait
   const setDpr = useThree((s) => s.setDpr)
   const { width, height } = useThree((s) => s.size)
   useEffect(() => {
@@ -727,13 +733,20 @@ function Quality() {
     // A pixel budget per tier instead of a fixed ratio: big monitors stay at 1:1,
     // phones (few CSS pixels, 3x screens) get up to 2x so text on the monitors stays sharp.
     const budget = [1.2e6, 2.1e6, 3.7e6][tier]
-    const cap = Math.min(2, Math.sqrt(budget / Math.max(1, width * height)))
+    const cap = Math.min(3, Math.sqrt(budget / Math.max(1, width * height)))
     setDpr(Math.max(1, Math.min(device, cap)))
   }, [tier, width, height, setDpr])
   if (tier === 0) return null
   return (
     <EffectComposer multisampling={0}>
-      <Bloom mipmapBlur levels={tier === 2 ? 5 : 4} intensity={0.9} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
+      {/* Softer glow on phones: at that size it smears the monitors' text. */}
+      <Bloom
+        mipmapBlur
+        levels={tier === 2 ? 5 : 4}
+        intensity={portrait ? 0.45 : 0.9}
+        luminanceThreshold={portrait ? 0.78 : 0.62}
+        luminanceSmoothing={0.25}
+      />
       <Vignette offset={0.28} darkness={0.8} />
     </EffectComposer>
   )
