@@ -740,8 +740,8 @@ kbd {
 /* ---------- HUD responsiveness ----------
    The side panels never disappear; they get denser as space runs out:
    wide  (>=1600) full router with blurbs
-   laptop (1200-1599) compact router, no blurbs
-   narrow (<1200) the router becomes a rail of numbered keys with fly-out labels
+   laptop (1300-1599) compact router, no blurbs
+   narrow (<1300) the router becomes a rail of numbered keys with fly-out labels
    Short screens trim the profile panel, and both panels scroll if they still don't fit. */
 .hud {
   max-height: calc(100vh - 96px);
@@ -790,7 +790,7 @@ kbd {
 }
 
 /* Rail mode */
-@media (max-width: 1199px) {
+@media (max-width: 1299px) {
   .hud-left {
     width: 264px;
     padding: 16px;

@@ -711,12 +711,20 @@ export function paintKeyCap(
   ctx.fillStyle = lit ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.05)'
   ctx.fillRect(0, 0, w, h * 0.12)
   ctx.fillStyle = lit === 'pgm' || lit === 'pvw' ? '#000' : accent
-  ctx.fillRect(w * 0.1, h * 0.14, w * 0.8, h * 0.05)
+  ctx.fillRect(w * 0.1, h * 0.07, w * 0.8, h * 0.045)
   ctx.fillStyle = lit === 'pgm' || lit === 'pvw' ? '#000' : '#e8edf2'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.font = `700 ${h * 0.36}px ${F.cond}`
-  ctx.fillText(num, w / 2, h * 0.44)
-  ctx.font = `700 ${h * 0.16}px ${F.cond}`
-  ctx.fillText(label.toUpperCase(), w / 2, h * 0.76)
+  ctx.font = `700 ${h * 0.46}px ${F.cond}`
+  ctx.fillText(num, w / 2, h * 0.46)
+  // Label as large as the cap allows: shrink only long words (EXPERIENCIA, FORMACIÓN…).
+  const text = label.toUpperCase()
+  let size = h * 0.24
+  ctx.font = `700 ${size}px ${F.cond}`
+  const fit = (w * 0.9) / ctx.measureText(text).width
+  if (fit < 1) {
+    size *= fit
+    ctx.font = `700 ${size}px ${F.cond}`
+  }
+  ctx.fillText(text, w / 2, h * 0.8)
 }

@@ -63,7 +63,7 @@ interface Surfaces {
 
 function createSurfaces(): Surfaces {
   const sources = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(512, 288, 0.8)])) as Record<SectionId, Surface>
-  const keys = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(128, 128)])) as Record<SectionId, Surface>
+  const keys = Object.fromEntries(SECTIONS.map((s) => [s.id, surface(256, 256)])) as Record<SectionId, Surface>
   const deco = Object.fromEntries(DECO_PLACEMENTS.map((d) => [d.id, surface(384, 216, 0.75)])) as Record<DecoId, Surface>
   return {
     sources,
@@ -587,10 +587,13 @@ function CameraRig() {
       wantLook.set(p.pos[0], p.pos[1], p.pos[2])
       wantPos.set(p.pos[0] + Math.sin(p.rotY) * dist, p.pos[1], p.pos[2] + Math.cos(p.rotY) * dist)
     } else {
-      // Pull back until the main wall (plus a hint of the wings) fits the space between the HUD panels.
-      const dist = THREE.MathUtils.clamp(8.9 / (2 * TAN_HALF_FOV * aspect * free), 8.2, 14)
-      wantPos.set(pointer.x * 0.45, 2.0 + pointer.y * 0.2 + (dist - 8.6) * 0.08, dist)
-      wantLook.set(pointer.x * 0.12, 1.6, 0)
+      // Frame the main wall (7 units wide) in the space between the HUD panels,
+      // but never closer than what keeps the ON AIR sign and the switcher in shot.
+      // 9 is the closest distance that still keeps the ON AIR sign and the whole switcher in shot.
+      const fitWidth = 7.4 / (2 * TAN_HALF_FOV * aspect * free)
+      const dist = THREE.MathUtils.clamp(fitWidth, 9, 14)
+      wantPos.set(pointer.x * 0.4, 1.95 + pointer.y * 0.18 + (dist - 8.6) * 0.06, dist)
+      wantLook.set(pointer.x * 0.1, 1.72, 0)
     }
     const k = 1 - Math.exp(-dt * (inside ? 3.6 : 2.0))
     perf.cameraMoving = camera.position.distanceToSquared(wantPos) > 1e-4
